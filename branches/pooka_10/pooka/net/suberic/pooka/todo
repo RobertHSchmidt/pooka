@@ -1,6 +1,3 @@
-*) -- windows --
-  *) support windows registry attachment associations.
-	-- check icemail
   *) printing in windows can leave control characters at the end of lines
 
 *) check for memory leaks
@@ -112,6 +109,10 @@ preview:
 	-- the MailFileSystemView doesn't seem to work at all (!)
 	-- up and down arrows while composing new messages.
 	-- ssl doesn't work.
+
+*) -- windows --
+  *) support windows registry attachment associations.
+	-- check icemail
 
 *) add support for other mail formats, like maildir (and maybe hotmail?).
 	shift pop3 backing from mbox to maildir.

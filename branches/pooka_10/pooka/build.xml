@@ -35,6 +35,9 @@
   </target>
 
   <target name="compile" depends="init">
+    <tstamp>
+      <format property="today" pattern="yyMMdd" locale="en"/>
+    </tstamp>
     <javac srcdir="${sourcedir}" destdir="${builddir}" classpath="${full_cp}"/>
     <copy todir="${builddir}/net/suberic/pooka">
       <fileset dir="${sourcedir}/suberic/pooka">
@@ -67,6 +70,7 @@
     <copy todir="${builddir}/net/suberic/pooka/doc">
       <fileset dir="${sourcedir}/suberic/pooka/doc"/>
     </copy>
+    <replace file="${builddir}/net/suberic/pooka/doc/en/About.html" token="VERSION_ID" value="version 1.1 snapshot build ${today}"/>
   </target>
 
   <target name="docs" depends="init">
