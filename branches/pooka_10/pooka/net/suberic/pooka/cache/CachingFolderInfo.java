@@ -1028,6 +1028,18 @@ public class CachingFolderInfo extends net.suberic.pooka.UIDFolderInfo {
   }
   
   /**
+   * This unsubscribes this FolderInfo and all of its children, if 
+   * applicable.
+   *
+   * For the CachingFolderInfo, this calls super.unsubscribe() and 
+   * getCache().invalidateCache().
+   */
+  public void unsubscribe() {
+    super.unsubscribe();
+    getCache().invalidateCache();
+  }
+
+  /**
    * Searches for messages in this folder which match the given
    * SearchTerm.
    *

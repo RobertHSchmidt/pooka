@@ -105,8 +105,9 @@ public class PreviewFolderPanel extends JPanel implements FolderDisplayUI {
     
     this.addFocusListener(new FocusAdapter() {
 	public void focusGained(FocusEvent e) {
-	  if (folderDisplay != null)
+	  if (folderDisplay != null) {
 	    folderDisplay.requestFocus();
+	  }
 	}
       });
     
@@ -155,6 +156,7 @@ public class PreviewFolderPanel extends JPanel implements FolderDisplayUI {
    * As defined in interface net.suberic.pooka.gui.FolderDisplayUI.
    */
   public void closeFolderDisplay() {
+    contentPanel.removePreviewPanel(getFolderInfo().getFolderID());
     folderDisplay.removeMessageTable();
     if (displayedFolder != null && displayedFolder.getFolderDisplayUI() == this)
       displayedFolder.setFolderDisplayUI(null);
