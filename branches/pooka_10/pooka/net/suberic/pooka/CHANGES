@@ -1,3 +1,5 @@
+fixed several memory leaks.
+
 the outbox folder now gets the correct toolbar in preview pane mode.
 
 030329 release
