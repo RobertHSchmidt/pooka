@@ -10,8 +10,6 @@ import javax.swing.JTree;
  * provide notification of some such, like for unread messages.  
  * Subclasses could probably add additional enhancements.
  *
- * As of now I'm using this both for the main FolderTree and for the
- * FolderChooser, mainly because I'm lazy.
  */
 
 public class DefaultFolderTreeCellRenderer extends DefaultTreeCellRenderer {
@@ -21,20 +19,14 @@ public class DefaultFolderTreeCellRenderer extends DefaultTreeCellRenderer {
     */
 
 	
-    public static int UNREAD_MESSAGES = 0;
-    public static int SUBSCRIBED_FOLDER = 1;
-
     private boolean hasFocus;
 
     Font specialFont = null;
 
     Font defaultFont = null;
 
-    int selectionCriteria = UNREAD_MESSAGES;
-
-    public DefaultFolderTreeCellRenderer(int criteria) {
+    public DefaultFolderTreeCellRenderer() {
 	super();
-	selectionCriteria = criteria;
     }
     public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 	// from super().
@@ -114,12 +106,7 @@ public class DefaultFolderTreeCellRenderer extends DefaultTreeCellRenderer {
 	} else {
 	    // create the new font.
 	    String fontStyle;
-	    if (selectionCriteria == UNREAD_MESSAGES)
-		fontStyle = Pooka.getProperty("FolderTree.readStyle", "");
-	    else if (selectionCriteria == SUBSCRIBED_FOLDER)
-		fontStyle = Pooka.getProperty("FolderTree.readStyle", "");
-	    else
-		fontStyle = "";
+	    fontStyle = Pooka.getProperty("FolderTree.readStyle", "");
 	    
 	    Font f = null;
 	    
@@ -147,12 +134,7 @@ public class DefaultFolderTreeCellRenderer extends DefaultTreeCellRenderer {
 	} else {
 	    // create the new font.
 	    String fontStyle;
-	    if (selectionCriteria == UNREAD_MESSAGES)
-		fontStyle = Pooka.getProperty("FolderTree.UnreadStyle", "BOLD");
-	    else if (selectionCriteria == SUBSCRIBED_FOLDER)
-		fontStyle = Pooka.getProperty("FolderChooser.subscribedStyle", "BOLD");
-	    else
-		fontStyle = "BOLD";
+	    fontStyle = Pooka.getProperty("FolderTree.UnreadStyle", "BOLD");
 
 	    Font f = null;
 	    
@@ -174,12 +156,7 @@ public class DefaultFolderTreeCellRenderer extends DefaultTreeCellRenderer {
      * special style.
      */
     public boolean isSpecial (FolderNode node) throws MessagingException {
-	if (selectionCriteria == UNREAD_MESSAGES)
-	    return (node != null && node.getFolderInfo().getFolder().getUnreadMessageCount() > 0);
-	else if (selectionCriteria == SUBSCRIBED_FOLDER)
-	    return (node != null && node.isSubscribed());
-	else 
-	    return false;
+	return (node != null && node.getFolderInfo().getFolder().getUnreadMessageCount() > 0);
     }
 
     public Font getSpecialFont() {
