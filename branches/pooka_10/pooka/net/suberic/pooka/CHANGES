@@ -1,3 +1,6 @@
+030530 release
+--------------
+
 we now show from addresses even if they aren't correctly formatted.
 
 fixed a bug where cached messages wouldn't show incorrectly identified

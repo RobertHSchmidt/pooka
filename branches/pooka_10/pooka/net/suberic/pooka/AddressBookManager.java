@@ -179,7 +179,7 @@ public class AddressBookManager implements ValueChangeListener {
 
     for (int i = 0; i < addressBookList.size(); i++) {
       AddressBook currentBook = (AddressBook) addressBookList.elementAt(i);
-      if (currentBook.getAddressBookID().equals(name))
+      if (currentBook != null && currentBook.getAddressBookID().equals(name))
 	return currentBook;
     }
 
