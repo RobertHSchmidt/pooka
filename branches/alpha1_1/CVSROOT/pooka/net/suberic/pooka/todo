@@ -1,0 +1,133 @@
+alpha 2
+----------
+
+*) make MailUtilities handle nested attachments properly.  also honour
+multipart/alternative content.
+
+*)  Do a simple encryption of the password fields in the
+.pookarc file so that you can read .pookarc and not have everyone see your
+password.
+
+*)  add context-sensitive menus (right-click menus)
+
+*) restore the Window Menu.
+
+*) restore the move messages between folders functionality.
+
+*)  fix the occasional NullPointerException in the FolderInfo (?)
+
+*)  fix what happens if you select an unreachable/incorrectly written
+mailbox--right now it hangs.
+
+*)  associated with above, multithread properly--too many actions happen
+on the main i/o thread.
+
+*) need to separate requests out into different threads.  right now, it's way
+too easy for the entire client to hang if your network connection hangs, be
+it checking to see if there are new messages, loading the information on 
+current messages, etc.
+
+*)  fix the response window size when there are lots of people in the 
+address fields--right now it makes the entire window huge.
+
+*)  add 1.3 compatibility.
+
+*)  fix the actions update when a message is unselected/deleted.
+
+*)  add a way to edit the mailcap file.
+
+*)  make the windows detachable.
+
+*) create a Trash folder.
+
+after alpha 2
+----------------
+
+*)  make the FolderChooser less clunky.  add the ability to create and
+remove Folders.
+
+*)  make the subscribe/unsubscribe folder functionality more easilty
+available.
+
+*)  implement a way to make a custom FolderCellRenderer for a property.
+
+*)  implement (likely similar) way to put constraints/checks on the values
+entered through a propertyEditor.
+
+*)  all MessagingExceptions should be handled correctly, not ignored.
+
+*)  the piece of code that keeps the Stores open only starts up if you open
+a FolderWindow.  so if you just start up the program and don't open any windows
+for a while, your connection to your Store can go down.
+
+*) delete for multiple messages takes way too long.
+
+*) takes too long to open a window where there are a lot of new messages.
+
+*) fix the display of the messages in the FolderWindow--right now, you get
+too much date info, not enough Subject.
+
+*) add an optional preview pane.
+
+*) add a search and replace for the message editors.
+
+*) add something to search through all messages in the folder.
+
+*) add the ability to print
+
+*) add the ability to save messages to files.
+
+*) make the folderWindow sortable
+
+*) add ability to reply/forward with attachments, or as inline, and so forth
+
+*) enable voice control
+
+-------
+
+open messages from the FolderWindow
+	can do.  todo on this:
+	customize settings--headers, window size.
+	check the window size if there are lots of 'to' or 'cc' entries.
+
+create and send message
+	can do.  todo on this:
+	fix the signature
+	add ability of setting return values by hand (not by UserProfile)
+	make a sent folder
+
+user profiles/information
+	can do.  todo:
+	make sure that the sendMailURL is properly updated as soon as it's
+		entered.  i think right now you have to restart, or reopen
+		folders, or something like that.
+
+Editing Profiles/Stores
+	can do.  todo:
+		make required fields.
+
+closing the window doesn't exit program.
+
+make an update Thread -- sort of done.  need to institute update time.
+
+attachments available from message list.
+
+implement Window Menu as Dynamic Menu.
+
+the Spice is life
+
+add Font stuff.
+
+hourglass for blocking actions--fix it. -?? may be a 1.2 bug; things work
+fine in 1.3.
+
+implement the signatures properly.  
+
+write profile changes to disk immediately on setting (?)
+
+BUGS
+---------
+updates of pkamailrc aren't handled correctly--some lines aren't deleted.
+
+actions on FolderPanel are always available in the menu.
+
