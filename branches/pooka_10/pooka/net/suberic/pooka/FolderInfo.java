@@ -1099,16 +1099,18 @@ public class FolderInfo implements MessageCountListener, ValueChangeListener, Us
     if (! targetFolder.isAvailable()) 
       targetFolder.loadFolder();
     
-    Folder target = targetFolder.getFolder();
-    if (target != null) {
-      Message[] m = new Message[msgs.length];
-      for (int i = 0; i < msgs.length; i++) {
-	m[i] = msgs[i].getRealMessage();
+    synchronized(targetFolder.getFolderThread().getRunLock()) {
+      Folder target = targetFolder.getFolder();
+      if (target != null) {
+	Message[] m = new Message[msgs.length];
+	for (int i = 0; i < msgs.length; i++) {
+	  m[i] = msgs[i].getRealMessage();
+	}
+	
+	getFolder().copyMessages(m, target);
+      } else {
+	targetFolder.appendMessages(msgs);
       }
-      
-      getFolder().copyMessages(m, target);
-    } else {
-      targetFolder.appendMessages(msgs);
     }
   }
 

@@ -1,3 +1,10 @@
+
+disconnected imap now caches message flags correctly.
+
+added a hack way to override errors like a MissingStartBoundary.
+
+fixed a deadlock in FolderInfo.copyMessages().
+
 made opening folders in the background the default.
 
 fixed a bug where unsubscribing to the last subfolder of a folder doesn't
