@@ -1,9 +1,29 @@
-  *) printing in windows can leave control characters at the end of lines
 
-*) check for memory leaks
- -- especially w/preview pane mode?
+*) add "view pookarc"
 
-*) make sure that if you close a store, it doesn't reopen it.
+*) fix the problem with things like MissingStartBoundary by getting the
+raw input stream.
+
+*) make it so folder windows save their settings (column width, sort order)
+
+*) printing in windows can leave control characters at the end of lines
+
+*) regexp? (add search/replace to editor)
+  -- started.  todo:
+		--  ??? jdk bug ???
+	*) add feature to NewMessage
+	*) add replace feature
+		-- check the caret location, too.
+	
+*) check why the bcc field sometimes doesn't show the address book icon.
+
+*) change the keybinding for the address book.  otherwise you get address book
+	entries while you're navigating the to field.
+
+*) more doc
+
+*) make there a build option for help only, so i can switch it in 
+	WebStart.
 
 *) add documentation and online help.
   -- general info, plus more detailed configuration information.
@@ -28,27 +48,10 @@
 
 *) add help for config stuff.
 
-*) make sure all help gets included in dist-full
-
-*) make there a build option for help only, so i can switch it in 
-	WebStart.
-
 *) fix up the error messages, and make sure that they look ok.
 
------
-
-*) fix connection failed message for ssl stores -- only fixable by sun?
-
-*) change the keybinding for the address book.  otherwise you get address book
-	entries while you're navigating the to field.
-
-*) check why the bcc field sometimes doesn't show the address book icon.
-
-*) preview pane: 
-	--make it so the status bar is at the bottom, underneath
-	the readmessagedisplaypanel--or possibly on the status pane.
-	-- maybe change the toolbars so there's only 1?
-	-- ?? make it so you can compose messages in the main window ??
+*) status messages:  make them appear and disappear at appropriate times.
+	-- Comparing new messages to current list... never goes away.
 
 *) document keybindings
 	-- keybindings for address book
@@ -57,13 +60,30 @@
 	-- keybindings for opening folders.
 	-- keybindings for detachwindow
 
+*) make a way to reopen folders that have been disconnected other than
+	closing and reopening the store. -- get testcase?
+	-- make it so there's a way to close the store that actually resets
+	the connection totally, so that if your network is screwed up 
+	pooka can recover without restarting.
+
+-----
+
+*) fix connection failed message for ssl stores -- only fixable by sun?
+
+*) check for memory leaks
+ -- especially w/preview pane mode?
+
+*) preview pane: 
+	--make it so the status bar is at the bottom, underneath
+	the readmessagedisplaypanel--or possibly on the status pane.
+	-- maybe change the toolbars so there's only 1?
+	-- ?? make it so you can compose messages in the main window ??
+
 *) NPE -- is that from switching from preview to desktop?
 	-- check window menu from switching preview to desktop.
 
 *) disconnected from store (like if the server goes down) doesn't result in 
 icons changing?  test.
-
-*) status messages:  make them appear and disappear at appropriate times.
 
 *) check disconnection/reconnection on network removal/restoral.
 
@@ -85,12 +105,6 @@ preview:
 	     it read. -- ?? test.  seems to work.
 	*)  add:  autocache up to a certain size.
 
-*) make a way to reopen folders that have been disconnected other than
-	closing and reopening the store. -- get testcase?
-	-- make it so there's a way to close the store that actually resets
-	the connection totally, so that if your network is screwed up 
-	pooka can recover without restarting.
-
 *) editors:  add listeners:  intFilter, enabledIfOtherFilter.  requiredFilter.
 
 *) splashscreen?
@@ -105,17 +119,43 @@ preview:
 +++ version 1.1 +++++++++++++++ 
 
 *) add support for jdk1.4
-	-- tabbing between the address components for New Messages
-	-- the MailFileSystemView doesn't seem to work at all (!)
-	-- up and down arrows while composing new messages.
-	-- ssl doesn't work.
+	-- new printing system.
+	-- NetworkInterface classes
+
+*) add pgp/gpg support. -- and/or s/mime?  probably make a generic class
+	for that.  slimpgp or cyptix.  s/mime is available from together
+	(@ sourceforge).
+
+*) add ldap support
+
+----------------------
+
+
+*) add support for jdk1.4
+	-- new focus architecture
+	-- new keybinding architecture
+	-- InputVerifier
+
+*) 1.4.1_01 bugs
+	  -- down arrow fairly consistently doesn't work when you type in a 
+	     line and then hit it.  hitting up, left, right resets it.
+	-- keybindings aren't right; open a message.  ^D it.  try to select
+	another message in the message list. -- worked around for the most
+	part.
 
 *) -- windows --
   *) support windows registry attachment associations.
 	-- check icemail
+	-- more or less added, but need to be able to access the library.
+
+*) add a keybinding to bring up the address book selector.
 
 *) add support for other mail formats, like maildir (and maybe hotmail?).
 	shift pop3 backing from mbox to maildir.
+
+*) spam filtering
+
+*) new message count in icon
 
 *) queuing of outgoing mails
 	todo on this:
@@ -127,10 +167,34 @@ preview:
 		whether or not it's up.
 			-- started.  make sure it's enough.
 
+
+*)  network on AWTEventThread:
+    i think that i did this for a reason.  possible that in 1.4 original
+	problem goes away?  maybe?
+        at com.sun.mail.imap.IMAPMessage.getFlags(IMAPMessage.java:704)
+        - locked <0x462522d0> (a com.sun.mail.imap.IMAPMessage)
+        at net.suberic.pooka.UIDMimeMessage.getFlags(UIDMimeMessage.java:380)
+        - locked <0x44f481f0> (a net.suberic.pooka.UIDMimeMessage)
+        at net.suberic.pooka.MessageInfo.getFlags(MessageInfo.java:87)
+        at net.suberic.pooka.gui.FolderDisplayPanel.getNextSelectableMessage(FolderDisplayPanel.java:536)
+        at net.suberic.pooka.gui.FolderDisplayPanel.getNextSelectableMessage(FolderDisplayPanel.java:516)
+        at net.suberic.pooka.gui.FolderDisplayPanel.selectNextMessage(FolderDisplayPanel.java:489)
+        at net.suberic.pooka.gui.FolderInternalFrame.selectNextMessage(FolderInternalFrame.java:316)
+        at net.suberic.pooka.gui.FolderDisplayPanel$7.actionPerformed(FolderDisplayPanel.java:372)
+        at javax.swing.JComponent$ActionStandin.actionPerformed(JComponent.java:2863)
+        at javax.swing.SwingUtilities.notifyAction(SwingUtilities.java:1512)
+        at javax.swing.JComponent.processKeyBinding(JComponent.java:2435)
+        at javax.swing.JTable.processKeyBinding(JTable.java:3254)
+        at javax.swing.JComponent.processKeyBindings(JComponent.java:2470)
+        at javax.swing.JComponent.processKeyEvent(JComponent.java:2398)
+
 *) forward to all.
  
 *) fix the network connection test so that it doesn't hang if the
 	network is up, but the test host is unreachable.
+
+*) make sure that if you close a store, it doesn't reopen it.
+	-- ?? should work.  look for testcase.
 
 *) come up with a wrapper for spawning external editors on windows.
 
@@ -174,8 +238,6 @@ preview:
 *) add support for composing new email messages from an external source,
 say, like reacting to a mailto: link.
 
-*) add a search and replace for the message editors.
-
 *) check the open/close/open pattern on disconnected folders.
 
 	-- disconnected imap --
@@ -218,10 +280,6 @@ desktop pane.
 
 *)  when you change users for a new message, then, even if the theme 
 doesn't change, you still resize the window.
-
-*) add pgp/gpg support. -- and/or s/mime?  probably make a generic class
-	for that.  slimpgp or cyptix.  s/mime is available from together
-	(@ sourceforge).
 
 *) read messages don't get font color set properly.  works in jdk1.4.
 
