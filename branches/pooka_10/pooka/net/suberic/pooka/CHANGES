@@ -1,3 +1,6 @@
+fixed a bug where unsubscribing to the last subfolder of a folder doesn't
+work.
+
 fixed several memory leaks.
 
 the outbox folder now gets the correct toolbar in preview pane mode.
