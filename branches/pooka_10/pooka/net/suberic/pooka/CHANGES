@@ -1,3 +1,5 @@
+made opening folders in the background the default.
+
 fixed a bug where unsubscribing to the last subfolder of a folder doesn't
 work.
 
