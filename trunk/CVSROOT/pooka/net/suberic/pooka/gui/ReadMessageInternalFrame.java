@@ -37,7 +37,7 @@ public class ReadMessageInternalFrame extends MessageInternalFrame {
 	    messageDisplay = new ReadMessageDisplayPanel(msg);
 	    messageDisplay.configureMessageDisplay();
 	    
-	    toolbar = new ConfigurableToolbar("MessageInternalFrameToolbar", Pooka.getResources());
+	    toolbar = new ConfigurableToolbar("MessageWindowToolbar", Pooka.getResources());
 	    
 	    this.getContentPane().add("North", toolbar);
 	    this.getContentPane().add("Center", messageDisplay);

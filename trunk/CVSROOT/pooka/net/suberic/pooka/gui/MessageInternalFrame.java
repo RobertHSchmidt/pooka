@@ -12,6 +12,11 @@ import javax.swing.text.JTextComponent;
 import javax.swing.event.*;
 import java.io.File;
 
+/**
+ * An InternalFrame which can display messages.
+ * 
+ * This class should be used in conjunction with a MessagePanel.
+ */
 public abstract class MessageInternalFrame extends JInternalFrame implements MessageUI {
 
     protected MessagePanel parentContainer;
