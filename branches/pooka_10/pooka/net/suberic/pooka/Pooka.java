@@ -88,9 +88,12 @@ public class Pooka {
       //resources = new net.suberic.util.VariableBundle(new Object().getClass().getClassLoader().getResource("/net/suberic/pooka/Pookarc").openStream(), "net.suberic.pooka.Pooka");
     }
 
-    // set up the SSL socket factory.
-    java.security.Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
-    java.security.Security.setProperty("ssl.SocketFactory.provider","net.suberic.pooka.ssl.PookaSSLSocketFactory");
+    if (! checkJavaVersion()) {
+      versionError();
+      System.exit(-1);
+    }
+    
+    StoreManager.setupSSL();
 
     try {
       UIManager.setLookAndFeel(getProperty("Pooka.looknfeel", UIManager.getCrossPlatformLookAndFeelClassName()));
@@ -254,6 +257,26 @@ public class Pooka {
 	}
       }
     }
+  }
+
+  /**
+   * Checks to make sure that the Java version is valid.
+   */
+  public static boolean checkJavaVersion() {
+    String javaVersion = System.getProperty("java.version");
+    if (javaVersion.compareTo("1.2") >= 0 && javaVersion.compareTo("1.4") <= 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Called if an incorrect version of Java is being used.
+   */
+  private static void versionError() {
+    String errorString = Pooka.getProperty("error.incorrectJavaVersion", "Error running Pooka.  This version (1.0 beta) \nof Pooka requires a 1.2 or 1.3 JDK.  \n\nFor JDK 1.4, please use a release of Pooka 1.1.\n\nPooka can be downloaded from\nhttp://pooka.sourceforge.net/\n\nYour JDK version:  ");
+    javax.swing.JOptionPane.showMessageDialog(null, errorString + System.getProperty("java.version"));
   }
 
   /**

@@ -1,3 +1,9 @@
+made it so you get a warning message if you try to start with an unsupported
+JDK.
+
+030115 release
+--------------
+
 fixed a bug where part of the error message was getting shown twice.
 
 made it so the INBOX is required for imap servers.  with luck this will work
