@@ -70,7 +70,7 @@
     <copy todir="${builddir}/net/suberic/pooka/doc">
       <fileset dir="${sourcedir}/suberic/pooka/doc"/>
     </copy>
-    <replace file="${builddir}/net/suberic/pooka/doc/en/About.html" token="VERSION_ID" value="version 1.1 snapshot build ${today}"/>
+    <replace file="${builddir}/net/suberic/pooka/doc/en/About.html" token="VERSION_ID" value="version 1.0 snapshot build ${today}"/>
   </target>
 
   <target name="docs" depends="init">
