@@ -1,3 +1,12 @@
+Added a way to delete a folder.
+
+Pooka now remembers its location on screen when restarting.
+
+attachment file choosers now remember your last directory, instead of always
+starting in your home directory.
+
+messages in Sent folders are no longer shown as new.
+
 optimized the caching system somewhat so that we're not writing files over
 and over agian to the filesystem.  this may also fix a problem where a
 message could be cached as blank if the connection to the store broke at

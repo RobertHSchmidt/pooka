@@ -141,10 +141,12 @@ public class MainPanel extends JSplitPane implements net.suberic.pooka.UserProfi
      */
 
     public void refreshActiveMenus() {
-	mainMenu.setActive(getActions());
-	mainToolbar.setActive(getActions());
-	keyBindings.setActive(getActions());
-	setNewMessageFlag(false);
+      Action[] currentActions = getActions();
+      mainMenu.setActive(currentActions);
+      mainToolbar.setActive(currentActions);
+      contentPanel.refreshActiveMenus();
+      keyBindings.setActive(currentActions);
+      setNewMessageFlag(false);
     }
 
     /**
@@ -234,6 +236,8 @@ public class MainPanel extends JSplitPane implements net.suberic.pooka.UserProfi
       Pooka.setProperty("Pooka.vsize", Integer.toString(this.getParentFrame().getHeight()));
       Pooka.setProperty("Pooka.folderPanel.hsize", Integer.toString(folderPanel.getWidth()));
       Pooka.setProperty("Pooka.folderPanel.vsize", Integer.toString(folderPanel.getHeight()));
+      Pooka.setProperty("Pooka.lastX", Integer.toString(this.getParentFrame().getX()));
+      Pooka.setProperty("Pooka.lastY", Integer.toString(this.getParentFrame().getY()));
       contentPanel.savePanelSize();
       
       if (contentPanel.isSavingOpenFolders()) {
