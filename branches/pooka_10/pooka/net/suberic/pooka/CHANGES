@@ -1,3 +1,8 @@
+optimized the caching system somewhat so that we're not writing files over
+and over agian to the filesystem.  this may also fix a problem where a
+message could be cached as blank if the connection to the store broke at
+just the right time.
+
 fixed theme support in preview pane mode.
 
 made it so you get a warning message if you try to start with an unsupported

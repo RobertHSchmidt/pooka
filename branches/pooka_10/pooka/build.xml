@@ -81,6 +81,10 @@
  	     packagenames="net.suberic.*"/>
   </target>
 
+  <target name="pooka">
+     <java fork="true" classname="net.suberic.pooka.Pooka" classpath="${full_cp}:${builddir}" maxmemory="64M"/>
+  </target>
+
   <target name="dist" depends="compile">
     <jar jarfile="${distdir}/pooka.jar" basedir="${builddir}" manifest="${importdir}/pooka.manifest"/> 
     <copy todir="${distdir}">
