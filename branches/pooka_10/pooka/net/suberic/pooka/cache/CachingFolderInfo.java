@@ -390,8 +390,10 @@ public class CachingFolderInfo extends net.suberic.pooka.UIDFolderInfo {
       if (cacheStatus != -1) {
 	for (int i = 0; i < messages.length; i++) {
 	  Message m = messages[i].getRealMessage();
-	  long uid = getUID(m);
-	  getCache().cacheMessage((MimeMessage)m, uid, cache.getUIDValidity(), cacheStatus);	
+	  if (m != null) {
+	    long uid = getUID(m);
+	    getCache().cacheMessage((MimeMessage)m, uid, cache.getUIDValidity(), cacheStatus);	
+	  }
 	}
       }
     } else {
@@ -439,8 +441,6 @@ public class CachingFolderInfo extends net.suberic.pooka.UIDFolderInfo {
    */
   
   public int getFirstUnreadMessage() {
-
-    
     // one part brute, one part force, one part ignorance.
     
     if (Pooka.isDebug())

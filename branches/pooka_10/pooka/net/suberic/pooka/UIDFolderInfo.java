@@ -18,21 +18,20 @@ import net.suberic.pooka.gui.FolderTableModel;
  */
 
 public class UIDFolderInfo extends FolderInfo {
-    protected HashMap uidToInfoTable = new HashMap();
-    protected long uidValidity;
-
-    // the resource for the folder disconnected message
-    protected static String disconnectedMessage = "error.UIDFolder.disconnected";
-
-    public UIDFolderInfo(StoreInfo parent, String fname) {
-	super(parent, fname);
-	
-    }
-
-    public UIDFolderInfo(FolderInfo parent, String fname) {
-	super(parent, fname);
-    }
-
+  protected HashMap uidToInfoTable = new HashMap();
+  protected long uidValidity;
+  
+  // the resource for the folder disconnected message
+  protected static String disconnectedMessage = "error.UIDFolder.disconnected";
+  
+  public UIDFolderInfo(StoreInfo parent, String fname) {
+    super(parent, fname);
+  }
+  
+  public UIDFolderInfo(FolderInfo parent, String fname) {
+    super(parent, fname);
+  }
+  
   /**
    * Loads all Messages into a new FolderTableModel, sets this 
    * FolderTableModel as the current FolderTableModel, and then returns
@@ -319,11 +318,13 @@ public class UIDFolderInfo extends FolderInfo {
 	    mi = new MessageInfo(newMsg, this);
 	    // this has already been fetched; no need to do so again.
 	    mi.setFetched(true);
+	    
 	    addedProxies.add(new MessageProxy(getColumnValues(), mi));
 	    messageToInfoTable.put(newMsg, mi);
 	    uidToInfoTable.put(new Long(uid), mi);
 	  }
 	}
+	
 	addedProxies.removeAll(applyFilters(addedProxies));
 	if (addedProxies.size() > 0) {
 	  getFolderTableModel().addRows(addedProxies);
@@ -494,14 +495,17 @@ public class UIDFolderInfo extends FolderInfo {
   public void fetch(MessageInfo[] messages, FetchProfile profile) throws MessagingException  {
     // check the messages first; make sure we're just fetching 'real'
     // messages.
-    Message[] realMsgs = new Message[messages.length];
+    java.util.ArrayList realMsgList = new java.util.ArrayList();
     for (int i = 0; i < messages.length; i++) {
       Message currentMsg = messages[i].getRealMessage();
-      if (currentMsg instanceof UIDMimeMessage)
-	realMsgs[i] = ((UIDMimeMessage)currentMsg).getMessage();
-      else
-	realMsgs[i] = currentMsg;
+      if (currentMsg != null && currentMsg instanceof UIDMimeMessage) {
+	currentMsg = ((UIDMimeMessage)currentMsg).getMessage();
+      }
+      if (currentMsg != null)
+	realMsgList.add(currentMsg);
     }
+
+    Message[] realMsgs = (Message[]) realMsgList.toArray(new Message[0]);
     
     getFolder().fetch(realMsgs, profile);
 
