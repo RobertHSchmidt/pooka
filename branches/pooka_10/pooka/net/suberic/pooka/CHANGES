@@ -1,3 +1,5 @@
+fixed theme support in preview pane mode.
+
 made it so you get a warning message if you try to start with an unsupported
 JDK.
 
