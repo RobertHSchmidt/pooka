@@ -1,0 +1,133 @@
+beta 1
+---------------
+
+ui engine
+---------
+*)  make the windows detachable.
+
+*) add an optional preview pane.
+
+general ui
+----------
+*) revamp the UserProfile, Store, and Folder editing process.  make a full
+screen for each with all the possible information (update time, colors,
+connection information, trash/sent folders, etc.) available, and make it
+so you can edit them by right-clicking on the folder.  in other words, do
+a big ui overhaul.
+
+*) takes too long to open a window where there are a lot of new messages.
+
+*) add the ability to save messages to files.
+
+*) add ability to reply/forward with attachments, or as inline, and so forth
+
+*) add copying messages.
+
+*) add undo/redo support
+
+protocol support
+----------------
+*) add pop3/local mail spool support.
+
+*) add disconnected imap support.
+
+*) fix the jfilechooser so it doesn't disconnect all of our folders when you
+use it--or at least so it doesn't matter if it does.
+
+searching
+---------
+*) add a search and replace for the message editors.
+
+*) add something to search through all messages in the folder.
+
+*) add support for mail filters.
+
+other
+-----
+*)  fix the out of memory problems--only load a certain amount of large
+messages.  for that matter, maybe also do an optimizeit audit.
+
+*) add address book and alias support
+
+
+after beta 1
+----------------
+
+*) enable voice control
+
+*) make a way to edit the mailcap bindings other than just the 'make default'
+option.
+
+*) currently, we only really support a signature file, though the ability
+is there to do all kinds of signature generators.  implement support for
+alternate signature methods.
+
+*)  implement a way to make a custom FolderCellRenderer for a property.
+
+*)  implement (likely similar) way to put constraints/checks on the values
+entered through a propertyEditor.
+
+*)  check on file->exit to make sure that there are no unsent messages,
+and give an option on what you want to do with each one if there are any.
+
+*)  check all of my actions and make sure that they are threading 
+properly--both that the email work is being done on the proper thread,
+and that all the gui updates are happening on the EventDispatcher thread.
+
+*)  all MessagingExceptions should be handled correctly, not ignored.
+
+*) delete for multiple messages takes way too long.
+
+*) make the scrolling work properly for all border cases, such as a single new
+window at -5, -5.
+
+*) fix the display of the messages in the FolderWindow--right now, you get
+too much date info, not enough Subject.
+
+*) make printing nicer--it's pretty basic now.
+
+*) select all/all messages
+
+*) add interfaces for all the rest of the features.  :)
+
+*) add more font support
+
+*) add 'edit message as new'
+
+*) add ldap support
+
+*) add pgp/gpg support.
+
+*) add ability to edit received messages, so you can do things like remove
+attachments that you don't want to keep (?)
+
+*) fix sorting of the from field--make it case-insensitive.
+
+-------
+
+open messages from the FolderWindow
+	can do.  todo on this:
+	customize settings--headers, window size.
+	check the window size if there are lots of 'to' or 'cc' entries.
+
+create and send message
+	can do.  todo on this:
+	fix the signature
+	add ability of setting return values by hand (not by UserProfile)
+	make a sent folder
+
+Editing Profiles/Stores
+	can do.  todo:
+		make required fields.
+
+make an update Thread -- sort of done.  need to institute update time.
+
+attachments available from message list.
+
+the Spice is life
+
+add Font stuff.
+
+write profile changes to disk immediately on setting (?)
+
+
