@@ -1,0 +1,640 @@
+*) branch 2.0 release.  
+
+*) make wheel scroll customizable
+
+*) make reply-to html work in a resonable way.
+
+*) configure trash folder as default.
+
+*) look at online bugs, etc.
+
+*) new attachment display w/icons?
+
+*) change download link on site
+*) make sure mailing list info is correct
+*) update website in general
+*) add blog/rss feed
+
+*) redo attachment display
+
+*) exit:  closing window should pop up a notice saying pooka is still
+	running; file->exit should exit.
+
+*) fix mbox to make it useful (now you can't create new folders).  make it
+	so you can make maildir-based folder.
+
+*) fix preview pane mode; make it look nice
+
+*) undelete?
+
+*) make icons update dynamically.
+
+*) bug?  change password of store with sent folder.  does sent folder
+	get re-tagged as a sent folder?
+
+*) folder-check reopen attempts should only happen if the store is open
+	or should be open.  they should not reopen the store.
+
+*) webmail?????
+	*) check out gmail and yahoo mail
+	*) quick sample implementation?
+
+*) check what happens if you hit enter on a subfolder while subscribing.
+	-- see if we can make it so hitting enter opens the subfolder
+	   rather than subscribing to it.
+
+*) fix manager exit cleanup of listeners; make it a consistent API.
+*) listeners:
+	*) make sure that on disconnection that we remove all listeners.
+		*) check:  listeners on VariableBundle.
+		*) check:  listeners on KeyboardManager (IN_FOCUSED_WINDOW).
+
+2.0 version
+-----------
+*) jdk 1.6 only
+*) javamail 1.4 
+   and jaf whatever
+*) javahelp 2.0
+*) linspire default icons
+
+*) icon manipulation
+ *) new splashscreen
+ *) new TrayIcon, too?
+
+*) add in notification for exiting to icon.
+	actually exits.
+	*) started.  need to make it reasonably nice.
+		-- only do this in 2.0?
+
+*) check out SwingWorker?
+
+*) work out webstart code for tray icon.
+
+*) new splash screen.
+
+*) change Item and ItemManager to using generics.
+
+*) NewAccountPooka should aggregate errors, so if you have no username and
+	no mail server, you should get a single error screen saying both
+	'no username' and 'no mail server'.
+
+*) NewAccountPooka should be callable anytime, so you can use it to create
+	any new account, not just your first account.
+
+*) add taskbar support on gnome, windows, and mac?
+  add start / bring up pooka
+	-- change 2xclick action (?)
+	should go:
+	  connected:  1xclick=show status?  2xclick = bring to front?
+	  	      rightclick=show menu
+	  disconnected:  1xclick=show status?  2xclick=start up?
+		      rightclick=show menu?
+  add preferences dialog
+  bug:  first call of right-click menu vanishes immediately. -- jdic bug?
+  add in open message support?
+	make the display nice?
+  add support for showing disconnection messages?
+  add disconnect/offline mode to right-click menu
+	-- sort of done.
+  figure out virtual desktop support???
+  trayicon support:
+	*) add changing message display timeout support
+		should be codeable with custom action????
+	*) fix tooltip display code so it doesn't show off screen
+		check in new API
+	*) should be able to tell if balloon is showing or not.
+	*) new new-message-list support
+	*) fix new message notification on folders if you read a message
+		from the Open Message menu from the TrayIcon.
+
+*) update locking code with new mechanism.
+-----------
+
+*) see if we can make pooka start up on correct virtual desktop
+
+*) add a spell checker -- jazzy????
+
+*) virtual folder support <sigh>
+
+*) add plugin for spam checker?
+
+*) make sure non-ascii characters work in email text. -- and especially
+	non-iso8859.
+
+*) fix tableinfos so that you after a disconnect/reconnect you don't
+	have to re-fetch the headers, only the flags.
+
+*) add an option to build.xml for compiling with deprecation enabled.
+
+*) fix non-plaintext-password support with imap (logindisabled)
+
+*) add support for running without any local files.
+   *) big tasks:  
+      *) url access for all file resources
+      *) relative paths for files/urls
+	-- support for http: access?
+	    -- fix variable bundle to make sure that we close the stream
+	    -- better error messages
+	    -- come up with configuration/usage plan.
+	    -- make it so we can start as '--http URL' 
+	-- figure out problem spots:
+		*) pop3 support?
+			-- ruling out pop3 boxes.
+		*) outgoing mailboxes?
+			-- works fine.  would be better if we allowed sent
+			   folder and outbox to be reassigned on translation.
+		*) address books?
+			-- gives error on startup. -- still does.  sigh.
+		*) encryption key files
+			-- gives error.
+  *) add support for running off of removable media (run from directory; cache/
+	config files relative to config file)
+	*) startup
+	   - needs to ask where to get configuration file.  either can be 
+	     http: or local file
+	   - configuration file needs to support relative directories to
+	     configuration file--so if conf file is in z:\pooka\pookarc,
+	     then .\.pooka should map to z:\pooka\.pooka.
+	*) usage
+	   - export for http usage needs to be put in the correct place
+		and tested.
+  *) file list:  pgp/smime files, signature file, address book, ssl cert file,
+	mbox file (n/a).
+   -- also:  pooka home, mailcap file, pookarc file
+
+*) check out situation with multiple connections.  see if we can speed
+   up things that way.  possibilities:
+	*) reuse our connections so we don't have to renegotiate ssl
+	   connections each time.
+	*) use separate threads for each folder so we can do the ssl
+	   negotiation in parallel.
+
+*) open store.  close store.  first, all the folders open anyway.  second,
+	the folders opening are opening with a null action.  third, after
+	the closing, the previously-loaded messages all go to 'loading'.
+
+-----
+
+*) consider:  move stuff from the bottom status area to the toolbar area.  or
+   at least figure out something to use all that space for.
+
+*) test w/gnu javamail -- ???
+*) test w/javamail 1.3.2.
+
+*) add a real debug system.
+
+*) add support for saved searches.
+
+*) add ability for ui components to be enabled/disabled programmatically.
+	- both for adding to menus/tables and enabling/disabling options.
+*) add a dependent button/menu item.  so that that way instead of having
+	a separate Caching popup menu, you can just say "if caching,
+	add this menu item; if not, don't."
+
+------
+
+*) separate out ui interfaces from swing implementations.
+
+*) check too many open files error on opening large cached folder?
+
+*) fix NPE if try to send a new message without configuring client.
+
+*) add mark as unread 
+
+*) new message count in icon
+
+*) fix threading for drag and drop -- just try doing a big copy into a folder 
+	with a paste operation.
+
+*) start up disconnected.  connect.  have filters.  get error:
+javax.mail.MessagingException: Error:  could not copy messages to folder:  net.suberic.pooka.cache.CachingFolderInfo@1e081c5
+;
+  nested exception is:
+        class javax.mail.MessagingException: Proxy.
+        at net.suberic.pooka.MessageInfo.moveMessage(MessageInfo.java:357)
+        at net.suberic.pooka.MessageInfo.moveMessage(MessageInfo.java:385)
+        at net.suberic.pooka.gui.MessageProxy.moveMessage(MessageProxy.java:584)        at net.suberic.pooka.filter.MoveFilterAction.performFilter(MoveFilterAction.java:30)
+        at net.suberic.pooka.BackendMessageFilter.performFilter(BackendMessageFilter.java:59)
+        at net.suberic.pooka.BackendMessageFilter.filterMessages(BackendMessageFilter.java:47)
+        at net.suberic.pooka.FolderInfo.applyFilters(FolderInfo.java:2035)
+        at net.suberic.pooka.cache.CachingFolderInfo.runMessagesAdded(CachingFolderInfo.java:725)
+        at net.suberic.pooka.FolderInfo.messagesAdded(FolderInfo.java:1649)
+        at net.suberic.pooka.cache.CachingFolderInfo.synchronizeCache(CachingFolderInfo.java:623)
+        at net.suberic.pooka.UIDFolderInfo.updateFolderOpenStatus(UIDFolderInfo.java:128)
+        at net.suberic.pooka.cache.CachingFolderInfo.openFolder(CachingFolderInfo.java:185)
+        at net.suberic.pooka.FolderInfo.openAllFolders(FolderInfo.java:468)
+        at net.suberic.pooka.StoreInfo$2.actionPerformed(StoreInfo.java:717)
+        at net.suberic.util.thread.ActionThread.run(ActionThread.java:72)
+
+*) ?? change reply-all binding?
+
+*) outgoing mailserver improvements:
+	*) network connections - come up with a way to autotest that doesn't
+		take lots of time.
+	*) sending mail should try to autodetect mailserver to use
+		*) each server has a connection list, or 'any'
+		*) each user has a connection list, or 'any'
+		*) each server for the user checks the connections in order.
+		*) try to use the first available server
+	*) on failure to send
+		*) show error first.  save to outbox default?  work offine?
+		*) offer to save to outbox if available
+		*) -- don't offer to save to outbox if not available.
+	*) offline setting???
+
+*) check:  if a folder realizes that it has become disconnected, it should
+	test to see if the store in general has disconnected.
+	-- see what happens when the network goes down and then we try to
+	check folder/store connection again.
+
+*) some case(s) in which we're not generating the attachment bundle 
+	correctly?  one instance is how we're handling multipart/alternative
+	entries that don't actually have multiple parts.
+	see pooka_problems blob
+
+*) add color support for replies (i.e. > in one color, >> in another, etc.)
+
+*) MessageRemovedException from UIDMimeMessage.getMessage() should result in 
+	message getting removed from display. (? does this ever happen?)
+
+-----
+
+*) encryption improvements.
+   *) if no keystore named, don't try loading?  test.
+	-- we still get errors there.  fix.
+   *) make keystores get updated if you change them while running.  in other
+	words, don't require a restart for encryption the first time.
+	  -- done.  make update only happen once per change, though.
+   *) add documentation
+	*) need to document versions, including webstart cryptix info
+	*) need to document unlimited strength jce info
+   *) test autodecrypt/auto sig check.  requires keys synched to email address.
+	test
+   *) test auto sign/auto encrypt.
+	test
+   *) key management
+	  - make sure you can use alternate keys even if one is set for
+		the default user.
+   *) fix keyboard focus on passphrase entry (make textfield have focus).
+   *) encryption action should offer key list if no default key for address.
+	-- figure out timing of that.
+   *) make sure UI shows up for auto-encrypted messages.
+   *) when selecting a key, have options for encryption (always use this key,
+	etc.)
+   *) fix threading on encryption actions.
+     *) !!! we're parsing each message on load now. !!!
+
+
+*) fix error in encoded stream problem.
+	-- just better error (?)  or maybe print out as far as it goes.
+	-- see pooka_problems from plc
+
+*) html with text attachment should show text attachment at the end. (??)
+
+*) modify built-in java display code to show download dialog for showing
+	attachments.
+
+*) change the keybinding for the address book.  otherwise you get address book
+	entries while you're navigating the to field.
+
+*) make VariableBundle support #include, or something like it.
+	*) split out .pookarc into config and runtimes files/sections
+
+*) add "view pookarc"
+
+*) add console?
+
+*) theme bug in folder table display between preview and desktop.
+
+------
+
+*) add mrpostman support(?)
+
+*) printing
+	*) better layout of printer frame.  center things?
+
+*) make it so folder windows save their settings (column width, sort order)
+
+*) more doc
+
+*) add documentation and online help.
+  -- general info, plus more detailed configuration information.
+	topics:
+	  running pooka
+	  copyright/gpl
+	  keybindings
+	  configuring stores (imap,pop3,mbox)
+	  reading mail
+	  new mail
+	  user profiles
+	  outgoing mail config
+	  network connections
+	  disconnected operation
+	  address book
+	  searches
+	  subscribing/unsubscribing folders
+	  ui types
+	  trash folder
+	  sent folder
+	  outgoing mail folder
+
+*) add help for config stuff.
+
+
+-------
+
+*) make there a build option for help only, so i can switch it in 
+	WebStart.
+
+*) fix up the error messages, and make sure that they look ok.
+
+*) document keybindings
+	-- keybindings for address book
+	-- keybindings for address entry panel
+	-- keybindings for saving attachments.
+	-- keybindings for opening folders.
+	-- keybindings for detachwindow
+
+*) make it so there's a way to close the store that actually resets
+	the connection totally, so that if your network is screwed up 
+	pooka can recover without restarting.
+
+-----
+
+*) additional crypto stuff
+	- different KeyStores for different users?
+
+*) regexp? (add search/replace to editor)
+  -- started.  todo:
+	*) add feature to NewMessage
+	*) add replace feature
+		-- check the caret location, too.
+	
+*) fix connection failed message for ssl stores -- only fixable by sun?
+	-- test under 1.3.2.
+
+*) check for memory leaks
+ -- especially w/preview pane mode?
+
+*) preview pane: 
+	--make it so the status bar is at the bottom, underneath
+	the readmessagedisplaypanel--or possibly on the status pane.
+	-- maybe change the toolbars so there's only 1?
+	-- ?? make it so you can compose messages in the main window ??
+  -- switching from preview to desktop gives outbox a "normal" toolbar.
+  -- switching from desktop to preview, hitting return both opens window
+	and shows the message in the preview pane.
+
+*) ui:  stack trace button should really be with ok button, not by itself.
+
+*) NPE -- is that from switching from preview to desktop?
+	-- check window menu from switching preview to desktop.
+
+*) disconnected from store (like if the server goes down) doesn't result in 
+icons changing?  test.
+
+*) disconnected:  
+	*)  make an option for caching everything.
+	*)  check sent folder with disconnected / especially not using
+		the NetworkConnection object. -- note:  ok with the
+		NetworkConnection.
+	      -- making that work better.  now we add the message, but
+	         it shows up as not cached.  also, change the algorithm
+	         for numbering.
+	*)  disconnected:  think that you're still connected.  lose connection.
+	    get new messages.  doesn't work properly.
+	*)  reading a message in disconnected mode doesn't actually mark
+	     it read. -- ?? test.  seems to work.
+	*)  add:  autocache up to a certain size.
+
+*) editors:  add listeners:  intFilter, enabledIfOtherFilter.  requiredFilter.
+
+*) umm, implement tile and cascade.  :)
+
+*) make it so you can add to the address book from the selection
+		panel.
+
+*) threading of attachment actions.
+
+*) add ldap support
+
+----------------------
+
+
+*) add support for jdk1.4
+	-- new focus architecture
+	-- new keybinding architecture
+	-- InputVerifier
+
+*) add a keybinding to bring up the address book selector.
+
+*) spam filtering
+
+*) forward to all.
+ 
+*) fix the network connection test so that it doesn't hang if the
+	network is up, but the test host is unreachable.
+
+*) make sure that if you close a store, it doesn't reopen it.
+	-- ?? should work.  look for testcase.
+
+*) ?? add a notification to a message which has been deleted while fastDelete
+	is enabled, but hasn't yet actually been removed.
+
+*) come up with a wrapper for spawning external editors on windows.
+
+*) make it so folders that can contain folders but have no subfolders have
+	the correct icon.
+
+*) get some decent pooka icons.
+	
+*) search for sent folders ends up doing loading on the display thread.
+
+*) make search window look different than normal window.
+
+*) add 'filter by message'
+
+*) remove 'where' clause from filter.
+
+*) add support for hierarchical new message notification--so getting an email
+	in foo/bar would show up on foo as well as bar.
+
+*) add icons for connecting to folder/store
+
+*) make it so we only get one connection failed message for a store.
+
+*) sent folders, outboxes, etc. should be configured without requiring a
+	restart.  also, should be able to change store protcol/connection
+	info without restarting.
+
+*) fix:java.lang.NullPointerException
+	at net.suberic.pooka.FolderInfo.getTrashFolder(Unknown Source)
+	at net.suberic.pooka.MultiMessageInfo.deleteMessage(Unknown Source)
+	(from search folder)
+
+*) fix:java.lang.NullPointerException
+	at net.suberic.pooka.gui.MessageProxy.refreshMessage(MessageProxy.java:353)
+	at net.suberic.pooka.thread.LoadMessageThread.loadWaitingMessages(LoadMessageThread.java:185)
+	at net.suberic.pooka.thread.LoadMessageThread.run(LoadMessageThread.java:53)
+
+*) make it so you can stop html displays from showing non-local images.
+ 	-- support RFC-2557??
+*) bug:  html text is always black, no matter the theme or the 
+specifications in the html itself.
+
+	-- disconnected imap --
+
+*) check to see what happens when we lose our connection before all of
+	the messages are loaded (esp. before the tableinfos are loaded)
+
+*) we're getting a weird flash of 'loading', probably when we're caching
+	the message.
+
+*) each loading of the FolderTableInfo rechecks the unread message
+	count, which sucks for performance.  improvements with new
+	caching system???
+
+*) each loading we also recache the flags no matter what.  this is probably
+not very efficient.
+
+*) reply to an email from you should go to the recipient.
+
+---
+
+*)  check all of my actions and make sure that they are threading 
+properly--both that the email work is being done on the proper thread,
+and that all the gui updates are happening on the EventDispatcher thread.
+
+*) bug:  make sure all of the showError, etc. methods are on the AWTEventThread
+rather than the calling thread.
+
+*)  all MessagingExceptions should be handled correctly, not ignored.  there
+should only be a few of these left.
+
+*) mail import?
+
+*) follow-ups?
+
+*) write html mail?
+
+*) 'advanced searching'
+
+*) search folders
+
+*) 'do not download this mail' rule
+
+*) labels?
+
+*) message threading
+
+*) make an option where message windows size to the viewport of the
+desktop pane.
+
+++++++++++++++++++++++++++++++++++++++++++++++++
+
+*)  when you change users for a new message, then, even if the theme 
+doesn't change, you still resize the window.
+
+*) add support for external editors, such as emacs.
+
+*) address book/ldap support.
+	now:
+	1)  add ldap support
+
+	later:
+	1)  make sure the matches go with the entry--i.e. if you match the
+	    actual address, have the actual address appear first.
+	2)  make it test for valid email addresses
+	3)  make it add an extension to incomplete and unmatched addresses
+	    (i.e. change 'allen' to 'allen@somehostname.org')
+	4)  change the UI so that matched address aliases display differently
+		(bold, in a different color, or some such).  that way a
+		user can tell if the entered address is a proper alias or not.
+
+
+*) fix the launcher (specifically the html launcher, but maybe all of them)
+to use "'s correctly.  works for now with opera, which should be good 
+enough...
+
+error:  filterfoldercellrenderer has problems with search forms.
+
+*) check:  see how outgoing and incoming mail handle tab characters.
+	-- a little bit of a bug, but not too much.  should probably
+	check the actual message source to see how tabs are sent.
+
+*)  make the windows detachable. 
+	-- done, at least for read messages and new message.
+	-- to fix:  
+	-- *)  make it not get included for preview pane ui windows.
+	-- *)  make it available for folder windows?
+	-- *)  the windows are being resized, meaning that if you make the
+	       window larger and then detach it, or if you move the split
+		pane divider, then it reverts to its original state when you
+		detach/attach the window.
+
+*) add threading of messages (?) 
+
+*) set priority (?)
+
+*) expand an unopened store in the folder tree that has folders and
+	subfolders.  connect to the store.  the subfolders close back up.
+	-- i think that happens when you have 'sync with subscribed folders'		  set.
+
+*) loadMessageTracker?  it doesn't seem to show up anymore.
+
+*)  make it so file->exit gives you the option for expunging deleted messages
+    from your mailboxes.
+
+*) bug:  if you go into the multi configuration editors and it's empty, you
+should more or less be forced to create a new entity.  otherwise you'll start
+typing in information and then be surprised when add clears it out.
+
+*) bug:  trying to go to a folder editor when there aren't any folders
+or stores configured is a big problem.
+
+*) a nested message which is of type text/html doesn't get shown on the
+	display.
+
+*) enable voice control
+
+*) make a way to edit the mailcap bindings other than just the 'make default'
+option.
+
+*) multi-deleted throw a NPE
+
+*) currently, we only really support a signature file, though the ability
+is there to do all kinds of signature generators.  implement support for
+alternate signature methods.
+
+*)  implement a way to make a custom FolderCellRenderer for a property.
+
+*)  implement (likely similar) way to put constraints/checks on the values
+entered through a propertyEditor.
+
+*) make the scrolling work properly for all border cases, such as a single new
+window at -5, -5.
+
+*) add interfaces for all the rest of the features.  :)
+
+*) add 'edit message as new' for normal messages.
+
+*) add support for flowed text
+
+*) add ability to edit received messages, so you can do things like remove
+attachments that you don't want to keep (?) -- and change the subject.
+
+*) name all of your threads.
+
+*) customize settings on folder window--headers, window size.
+
+*) add customization editor for toolbars and menus. 
+
+*) make required fields for the gui properties.
+
+*) check it to see if we can still get the same kind of 
+	folders-always-available performance while not keeping a separate
+	imapd connection open for each folder.
+
+the Spice is life
+
+
