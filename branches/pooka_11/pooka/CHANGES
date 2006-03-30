@@ -1,3 +1,5 @@
+enabled antialiasing of text by default for jdk 1.5 and later.
+
 060227 release
 --------------
 
