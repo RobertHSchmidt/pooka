@@ -50,6 +50,18 @@ public class CachingFolderInfo extends net.suberic.pooka.UIDFolderInfo {
     
     Pooka.getResources().addValueChangeListener(this, getFolderProperty() + ".autoCache");
   }
+
+  /**
+   * Loads the column names and sizes.
+   */
+  protected FetchProfile createColumnInformation() {
+    FetchProfile fp = super.createColumnInformation();
+    // we need to get the full headers for the CachingFolderInfo.
+    fp = new FetchProfile();
+    fp.add(FetchProfile.Item.FLAGS);
+    fp.add(com.sun.mail.imap.IMAPFolder.FetchProfileItem.HEADERS);
+    return fp;
+  }  
   
   /**
    * This actually loads up the Folder object itself.  This is used so 
@@ -482,7 +494,7 @@ public class CachingFolderInfo extends net.suberic.pooka.UIDFolderInfo {
     int cacheStatus = -1;
     boolean doFlags = profile.contains(FetchProfile.Item.FLAGS);
     String[] headers = profile.getHeaderNames();
-    boolean doHeaders = (profile.contains(FetchProfile.Item.ENVELOPE) || profile.contains(FetchProfile.Item.CONTENT_INFO) || (headers != null && headers.length > 0));
+    boolean doHeaders = (profile.contains(FetchProfile.Item.ENVELOPE) || profile.contains(FetchProfile.Item.CONTENT_INFO) || profile.contains(com.sun.mail.imap.IMAPFolder.FetchProfileItem.HEADERS) || (headers != null && headers.length > 0));
     
     if (doFlags && doHeaders) {
       cacheStatus = SimpleFileCache.FLAGS_AND_HEADERS;
@@ -849,14 +861,18 @@ public class CachingFolderInfo extends net.suberic.pooka.UIDFolderInfo {
       
       MessageInfo mi;
       Vector addedProxies = new Vector();
+      List addedInfos = new java.util.ArrayList();
       for (int i = 0; i < addedMessages.length; i++) {
         if (addedMessages[i] instanceof CachingMimeMessage) {
           long uid = ((CachingMimeMessage) addedMessages[i]).getUID();
-          if (getMessageInfoByUid(uid) != null) {
+          mi = getMessageInfoByUid(uid);
+          if (mi != null) {
+            addedInfos.add(mi);
             if (getLogger().isLoggable(Level.FINE))
               getLogger().log(Level.FINE, getFolderID() + ":  this is a duplicate.  not making a new messageinfo for it.");
           } else {
             mi = new MessageInfo(addedMessages[i], CachingFolderInfo.this);
+            addedInfos.add(mi);
             addedProxies.add(new MessageProxy(getColumnValues(), mi));
             messageToInfoTable.put(addedMessages[i], mi);
             uidToInfoTable.put(new Long(((CachingMimeMessage) addedMessages[i]).getUID()), mi);
@@ -885,7 +901,9 @@ public class CachingFolderInfo extends net.suberic.pooka.UIDFolderInfo {
           } catch (MessagingException me) {
           }
 
-          if (getMessageInfoByUid(uid) != null) {
+          mi = getMessageInfoByUid(uid);
+          if (mi != null) {
+            addedInfos.add(mi);
             if (getLogger().isLoggable(Level.FINE))
               getLogger().log(Level.FINE, getFolderID() + ":  this is a duplicate.  not making a new messageinfo for it.");
 
@@ -896,6 +914,7 @@ public class CachingFolderInfo extends net.suberic.pooka.UIDFolderInfo {
           } else {
             CachingMimeMessage newMsg = new CachingMimeMessage(CachingFolderInfo.this, uid);
             mi = new MessageInfo(newMsg, CachingFolderInfo.this);
+            addedInfos.add(mi);
             addedProxies.add(new MessageProxy(getColumnValues(), mi));
             messageToInfoTable.put(newMsg, mi);
             uidToInfoTable.put(new Long(uid), mi);
@@ -917,20 +936,34 @@ public class CachingFolderInfo extends net.suberic.pooka.UIDFolderInfo {
         }
       }
 
-      //fetch(addedMessages, fetchProfile);
-      for (int i = 0; i < addedMessages.length; i++) {
+      try {
+        List preloadMessages = addedInfos;
+        if (addedInfos.size() > fetchBatchSize) {
+          preloadMessages = addedInfos.subList(0, fetchBatchSize);
+        }
+        MessageInfo[] preloadArray = new MessageInfo[preloadMessages.size()];
+        for (int i = 0; i < preloadMessages.size(); i++) {
+          preloadArray[i] = (MessageInfo) preloadMessages.get(i);
+        }
+        fetch(preloadArray, fetchProfile);
+      } catch (MessagingException me) {
+        getLogger().warning("error prefetching messages:  " + me.toString());
+      }
+      /*
+      for (int i = 0; i < preloadMessages.length; i++) {
         long uid = -1;
         try {
-          uid = getUID(addedMessages[i]);
+          uid = getUID(preloadMessages[i]);
         } catch (MessagingException me) {
         }
         try {
           // FIXME
-          getCache().cacheMessage((MimeMessage)addedMessages[i], uid, getUIDValidity(), SimpleFileCache.FLAGS_AND_HEADERS, false);
+          getCache().cacheMessage((MimeMessage)preloadMessages[i], uid, getUIDValidity(), SimpleFileCache.FLAGS_AND_HEADERS, false);
         } catch (Exception e) {
 
         }
       }
+      */
 
       getCache().writeMsgFile();
 
@@ -947,7 +980,7 @@ public class CachingFolderInfo extends net.suberic.pooka.UIDFolderInfo {
         MessageProxy[] addedArray = (MessageProxy[]) addedProxies.toArray(new MessageProxy[0]);
         //loaderThread.loadMessages(addedArray, net.suberic.pooka.thread.LoadMessageThread.HIGH);
         mMessageLoader.loadMessages(addedArray, net.suberic.pooka.thread.MessageLoader.HIGH);
-       
+        
         if (autoCache) {
           mMessageLoader.cacheMessages(addedArray);
         }
