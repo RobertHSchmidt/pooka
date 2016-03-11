@@ -186,6 +186,10 @@ public class FolderInfo implements MessageCountListener, ValueChangeListener, Us
    */
 
   public FolderInfo(StoreInfo parent, String fname) {
+    if (fname == null) {
+      System.out.println("folder name is null(!!)");
+      fname = "";
+    }
     parentStore = parent;
     setFolderID(parent.getStoreID() + "." + fname);
     mFolderName = fname;

@@ -105,28 +105,28 @@
     </tstamp>
     <javac srcdir="${sourcedir}" destdir="${classes_dir}" classpath="${pooka.compile.path}" debug="true" deprecation="on"/>
     <copy todir="${classes_dir}/net/suberic/pooka">
-      <fileset dir="${sourcedir}/net/suberic/pooka">
+      <fileset dir="${sourcedir}/main/resources/net/suberic/pooka">
         <include name="Pookarc"/>
         <include name="*.properties"/>
       </fileset>
     </copy>
     <copy todir="${classes_dir}/net/suberic/pooka/conf">
-      <fileset dir="${sourcedir}/net/suberic/pooka/conf">
+      <fileset dir="${sourcedir}/main/resources/net/suberic/pooka/conf">
         <include name="*.properties"/>
       </fileset>
     </copy>
     <copy todir="${classes_dir}/net/suberic/pooka/gui/images">
-      <fileset dir="${sourcedir}/net/suberic/pooka/gui/images">
+      <fileset dir="${sourcedir}/main/resources/net/suberic/pooka/gui/images">
         <include name="**/*"/>
       </fileset>
     </copy>
     <copy todir="${classes_dir}/net/suberic/util/gui/propedit/images">
-      <fileset dir="${sourcedir}/net/suberic/util/gui/propedit/images">
+      <fileset dir="${sourcedir}/main/java/net/suberic/util/gui/propedit/images">
         <include name="**/*"/>
       </fileset>
     </copy>
     <copy todir="${classes_dir}/net/suberic/util/gui/images">
-      <fileset dir="${sourcedir}/net/suberic/util/gui/images">
+      <fileset dir="${sourcedir}/main/java//net/suberic/util/gui/images">
         <include name="**/*"/>
       </fileset>
     </copy>
@@ -135,9 +135,9 @@
         <include name="**/*"/>
       </fileset>
     </copy>
-    <copy file="${sourcedir}/net/suberic/pooka/COPYING" todir="${classes_dir}/net/suberic/pooka/"/>
+    <copy file="${sourcedir}/main/java/net/suberic/pooka/COPYING" todir="${classes_dir}/net/suberic/pooka/"/>
     <copy todir="${classes_dir}/net/suberic/pooka/doc">
-      <fileset dir="${sourcedir}/net/suberic/pooka/doc"/>
+      <fileset dir="${sourcedir}/main/resources/net/suberic/pooka/doc"/>
     </copy>
     <replace file="${classes_dir}/net/suberic/pooka/doc/en/About.html" token="VERSION_ID" value="version 2.0 snapshot build ${today}"/>
   </target>
@@ -148,13 +148,13 @@
     </tstamp>
     <javac srcdir="${sourcedir}" destdir="${classes_dir}" classpath="${pooka.compile.path}" debug="true" deprecation="on"/>
     <copy todir="${classes_dir}/net/suberic/pooka">
-      <fileset dir="${sourcedir}/net/suberic/pooka">
+      <fileset dir="${sourcedir}/main/resources/net/suberic/pooka">
         <include name="Pookarc"/>
         <include name="*.properties"/>
       </fileset>
     </copy>
     <copy todir="${classes_dir}/net/suberic/pooka/conf">
-      <fileset dir="${sourcedir}/net/suberic/pooka/conf">
+      <fileset dir="${sourcedir}/main/resource/net/suberic/pooka/conf">
         <include name="*.properties"/>
       </fileset>
     </copy>
@@ -277,7 +277,7 @@
       </fileset>
     </copy>
     <copy todir="${classes_dir}/net/suberic/pooka/conf">
-      <fileset dir="${sourcedir}/net/suberic/pooka/conf">
+      <fileset dir="${sourcedir}/main/resources/net/suberic/pooka/conf">
         <include name="*.properties"/>
       </fileset>
     </copy>

@@ -88,6 +88,7 @@ public class ActionThread extends Thread {
         }
         pair = popQueue();
       }
+      preSleep();
       try {
         sleeping = true;
         while (true)
@@ -96,6 +97,13 @@ public class ActionThread extends Thread {
         sleeping = false;
       }
     }
+  }
+
+  /**
+   * Called before the thread sleeps.  By default a no-op.
+   */
+  protected void preSleep() {
+
   }
 
   /**

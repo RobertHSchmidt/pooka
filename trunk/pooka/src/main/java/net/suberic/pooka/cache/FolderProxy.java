@@ -8,7 +8,7 @@ public class FolderProxy extends javax.mail.Folder {
   String folderName;
 
   public FolderProxy(String name) {
-    super(null);
+    super(new StoreProxy(Session.getInstance(new java.util.Properties()), null));
     folderName = name;
   }
   public String getName() {
@@ -17,14 +17,14 @@ public class FolderProxy extends javax.mail.Folder {
   public String getFullName() {
     return folderName;
   }
-  
+
   public  Folder getParent() throws MessagingException { throw new MessagingException(Pooka.getProperty("error.folderNotAvailable", "Folder not loaded.")); }
 
      public  boolean exists() throws MessagingException { throw new MessagingException(Pooka.getProperty("error.folderNotAvailable", "Folder not loaded.")); }
 
    public  Folder[] list(String pattern) throws MessagingException { throw new MessagingException(Pooka.getProperty("error.folderNotAvailable", "Folder not loaded.")); }
 
-   public  int getType() throws MessagingException { throw new MessagingException(Pooka.getProperty("error.folderNotAvailable", "Folder not loaded.")); } 
+   public  int getType() throws MessagingException { throw new MessagingException(Pooka.getProperty("error.folderNotAvailable", "Folder not loaded.")); }
 
     public  char getSeparator() throws MessagingException { throw new MessagingException(Pooka.getProperty("error.folderNotAvailable", "Folder not loaded.")); }
     public  boolean create(int type) throws MessagingException { throw new MessagingException(Pooka.getProperty("error.folderNotAvailable", "Folder not loaded.")); }
@@ -32,9 +32,9 @@ public class FolderProxy extends javax.mail.Folder {
    public  boolean hasNewMessages() throws MessagingException { throw new MessagingException(Pooka.getProperty("error.folderNotAvailable", "Folder not loaded.")); }
 
      public  Folder getFolder(String name)
-				throws MessagingException { throw new MessagingException(Pooka.getProperty("error.folderNotAvailable", "Folder not loaded.")); }
-   public  boolean delete(boolean recurse) 
-				throws MessagingException { throw new MessagingException(Pooka.getProperty("error.folderNotAvailable", "Folder not loaded.")); }
+        throws MessagingException { throw new MessagingException(Pooka.getProperty("error.folderNotAvailable", "Folder not loaded.")); }
+   public  boolean delete(boolean recurse)
+        throws MessagingException { throw new MessagingException(Pooka.getProperty("error.folderNotAvailable", "Folder not loaded.")); }
 
  public  boolean renameTo(Folder f) throws MessagingException { throw new MessagingException(Pooka.getProperty("error.folderNotAvailable", "Folder not loaded.")); }
 
@@ -49,7 +49,7 @@ public  void open(int mode) throws MessagingException { throw new MessagingExcep
   }
   public  int getMessageCount() throws MessagingException { throw new MessagingException(Pooka.getProperty("error.folderNotAvailable", "Folder not loaded.")); }
   public  Message getMessage(int msgnum)
-				throws MessagingException { throw new MessagingException(Pooka.getProperty("error.folderNotAvailable", "Folder not loaded.")); }
+        throws MessagingException { throw new MessagingException(Pooka.getProperty("error.folderNotAvailable", "Folder not loaded.")); }
 
   public  void appendMessages(Message[] msgs)
     throws MessagingException { throw new MessagingException(Pooka.getProperty("error.folderNotAvailable", "Folder not loaded.")); }

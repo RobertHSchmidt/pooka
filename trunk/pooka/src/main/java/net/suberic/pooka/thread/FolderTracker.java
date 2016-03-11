@@ -242,6 +242,13 @@ public class FolderTracker extends Thread {
       interrupt();
   }
 
+  /**
+   * Returns if the tracker should stop.
+   */
+  public boolean getStopped() {
+    return mStopped;
+  }
+
   // end thread control
 
   // action section

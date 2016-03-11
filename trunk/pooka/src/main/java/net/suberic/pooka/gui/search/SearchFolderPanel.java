@@ -3,8 +3,9 @@ import net.suberic.pooka.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.Dimension;
-import java.util.Vector;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * This is a panel which allows you to choose which folders you will
@@ -23,17 +24,17 @@ public class SearchFolderPanel extends JPanel {
      * the available Folders.
      */
     public SearchFolderPanel() {
-	this(new FolderInfo[0], Pooka.getStoreManager().getAllOpenFolders());
+  this(new FolderInfo[0], Pooka.getStoreManager().getAllOpenFolders());
     }
 
-    
+
     /**
      * Create a SearchFolderPanel with all the Folders in the given Store(s)
      * selected.  By default, all available folders will be allowed to be
      * selected.
      */
     public SearchFolderPanel(StoreInfo[] storeList) {
-	this(storeList, Pooka.getStoreManager().getAllOpenFolders());
+  this(storeList, Pooka.getStoreManager().getAllOpenFolders());
     }
 
     /**
@@ -41,15 +42,15 @@ public class SearchFolderPanel extends JPanel {
      * selected.  allowedValues shows which Folders are available.
      */
     public SearchFolderPanel(StoreInfo[] storeList, Vector allowedValues) {
-	selected = new Vector();
-	for (int i = 0; i < storeList.length; i++)
-	    selected.addAll(storeList[i].getAllFolders());
+  selected = new Vector();
+  for (int i = 0; i < storeList.length; i++)
+      selected.addAll(storeList[i].getAllFolders());
 
-	if (!isEditable) {
-	    createStaticPanel(selected);
-	} else {
-	    createDynamicPanel(selected, allowedValues);
-	}
+  if (!isEditable) {
+      createStaticPanel(selected);
+  } else {
+      createDynamicPanel(selected, allowedValues);
+  }
     }
 
     /**
@@ -58,7 +59,7 @@ public class SearchFolderPanel extends JPanel {
      * selected.
      */
     public SearchFolderPanel(FolderInfo[] folderList) {
-	this(folderList, Pooka.getStoreManager().getAllOpenFolders());
+  this(folderList, Pooka.getStoreManager().getAllOpenFolders());
     }
 
     /**
@@ -66,86 +67,86 @@ public class SearchFolderPanel extends JPanel {
      * allowedValues shows which Folders are available.
      */
     public SearchFolderPanel(FolderInfo[] folderList, Vector allowedValues) {
-	for (int i = 0; i < folderList.length; i++) {
-	    selected.add(folderList[i]);
-	}
-	if (!isEditable) {
-	    createStaticPanel(selected);
-	} else {
-	    createDynamicPanel(selected, allowedValues);
-	}
+  for (int i = 0; i < folderList.length; i++) {
+      selected.add(folderList[i]);
+  }
+  if (!isEditable) {
+      createStaticPanel(selected);
+  } else {
+      createDynamicPanel(selected, allowedValues);
+  }
     }
 
     /**
      * This creates a static panel.
      */
     public void createStaticPanel(Vector folderList) {
-	StringBuffer msg = new StringBuffer();
-	msg.append("Searching folders:\n");
-	for (int i = 0; i < folderList.size(); i++) 
-	    msg.append(((FolderInfo)folderList.elementAt(i)).getFolderID() + "\n");
-	JTextArea label = new JTextArea(msg.toString());
-	this.add(label);
+  StringBuffer msg = new StringBuffer();
+  msg.append("Searching folders:\n");
+  for (int i = 0; i < folderList.size(); i++)
+      msg.append(((FolderInfo)folderList.elementAt(i)).getFolderID() + "\n");
+  JTextArea label = new JTextArea(msg.toString());
+  this.add(label);
     }
 
     /**
      * Creates a dynamic panel with the given Folders selected.
      */
     public void createDynamicPanel(Vector folderList, Vector allowedValues) {
-	Vector folderNameList = new Vector();
-	labelToFolderMap = new java.util.HashMap();
-	for (int i = 0; i < allowedValues.size(); i++) {
-	    FolderInfo folder = (FolderInfo) allowedValues.elementAt(i);
-	    String name = folder.getFolderID();
-	    folderNameList.add(name);
-	    labelToFolderMap.put(name, folder);
-	}
+      Vector<String> folderNameList = new Vector<String>();
+  labelToFolderMap = new java.util.HashMap();
+  for (int i = 0; i < allowedValues.size(); i++) {
+      FolderInfo folder = (FolderInfo) allowedValues.elementAt(i);
+      String name = folder.getFolderID();
+      folderNameList.add(name);
+      labelToFolderMap.put(name, folder);
+  }
 
-	folderListSelector = new JList(folderNameList);
-	JScrollPane scroller = new JScrollPane(folderListSelector, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-	/*
-	Dimension scrollerPrefSize = folderListSelector.getPreferredSize();
-	scrollerPrefSize.width = Math.min(Integer.parseInt(Pooka.getProperty("Pooka.searchFolderDisplay.hsize", "500")), scrollerPrefSize.width);
-	scrollerPrefSize.height = Math.min(Integer.parseInt(Pooka.getProperty("Pooka.searchFolderDisplay.vsize", "100")), scrollerPrefSize.height);
-	*/
-	Dimension scrollerPrefSize = new Dimension(500, 100);
-	scroller.setPreferredSize(scrollerPrefSize);
+  folderListSelector = new JList<String>(folderNameList);
+  JScrollPane scroller = new JScrollPane(folderListSelector, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+  /*
+  Dimension scrollerPrefSize = folderListSelector.getPreferredSize();
+  scrollerPrefSize.width = Math.min(Integer.parseInt(Pooka.getProperty("Pooka.searchFolderDisplay.hsize", "500")), scrollerPrefSize.width);
+  scrollerPrefSize.height = Math.min(Integer.parseInt(Pooka.getProperty("Pooka.searchFolderDisplay.vsize", "100")), scrollerPrefSize.height);
+  */
+  Dimension scrollerPrefSize = new Dimension(500, 100);
+  scroller.setPreferredSize(scrollerPrefSize);
 
-	this.add(scroller);
+  this.add(scroller);
 
-	folderListSelector.setValueIsAdjusting(true);
-	// now go ahead and select the selected values.
-	for (int i = 0 ; i < folderList.size(); i++) {
-	    String folderId = ((FolderInfo)folderList.elementAt(i)).getFolderID();
-	    if (folderListSelector.getSelectedIndex() == -1) {
-		folderListSelector.setSelectedValue(folderId, true);
-	    } else {
-		int index = folderNameList.indexOf(folderId);
-		if (index != -1)
-		    folderListSelector.addSelectionInterval(index, index);
-	    }
-	}
-	folderListSelector.setValueIsAdjusting(false);
+  folderListSelector.setValueIsAdjusting(true);
+  // now go ahead and select the selected values.
+  for (int i = 0 ; i < folderList.size(); i++) {
+      String folderId = ((FolderInfo)folderList.elementAt(i)).getFolderID();
+      if (folderListSelector.getSelectedIndex() == -1) {
+    folderListSelector.setSelectedValue(folderId, true);
+      } else {
+    int index = folderNameList.indexOf(folderId);
+    if (index != -1)
+        folderListSelector.addSelectionInterval(index, index);
+      }
+  }
+  folderListSelector.setValueIsAdjusting(false);
     }
 
     /**
      * Returns a Vector of selected FolderInfos to search.
      */
     public Vector getSelectedFolders() {
-	if (! isEditable) {
-	    return selected;
-	} else {
-	    //get the selected folders from the gui component.
-	    Vector returnValue = new Vector();
-	    Object[] selectedValues = folderListSelector.getSelectedValues();
-	    for (int i = 0; i < selectedValues.length; i++) {
-		String currentSelection = (String) selectedValues[i];
-		FolderInfo currentFolder = (FolderInfo) labelToFolderMap.get(currentSelection);
-		returnValue.add(currentFolder);
-	    }
+  if (! isEditable) {
+      return selected;
+  } else {
+      //get the selected folders from the gui component.
+      Vector returnValue = new Vector();
+      List<String> selectedValues = folderListSelector.getSelectedValuesList();
+      for (String currentSelection: selectedValues) {
+        //String currentSelection = (String) selectedValues[i];
+        FolderInfo currentFolder = (FolderInfo) labelToFolderMap.get(currentSelection);
+        returnValue.add(currentFolder);
+      }
 
-	    return returnValue;
-	}
+      return returnValue;
+  }
     }
-    
+
 }

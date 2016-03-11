@@ -4,8 +4,11 @@ import javax.mail.*;
 import javax.mail.event.*;
 import javax.swing.event.EventListenerList;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+
+import com.sun.mail.imap.IdleManager;
 
 import net.suberic.pooka.conf.StoreConfiguration;
 import net.suberic.pooka.gui.*;
@@ -29,6 +32,7 @@ public class StoreInfo implements ValueChangeListener, Item, NetworkConnectionLi
   // the actual connection information
   private Store store;
   private Session mSession;
+  private IdleManager idleManager;
 
   // The is the store ID.
   private String storeID;
@@ -138,7 +142,6 @@ public class StoreInfo implements ValueChangeListener, Item, NetworkConnectionLi
 
     try {
       mSession = Session.getInstance(p, mAuthenticator);
-
       updateSessionDebug();
 
       store = mSession.getStore(url);
@@ -156,6 +159,14 @@ public class StoreInfo implements ValueChangeListener, Item, NetworkConnectionLi
       config.setFolderList(newFlist);
     }
 
+    if (protocol.startsWith("imap")) {
+      try {
+        ExecutorService es = Executors.newCachedThreadPool();
+        idleManager = new IdleManager(mSession, es);
+      } catch (java.io.IOException ioe) {
+        ioe.printStackTrace();
+      }
+    }
     // check to see if we're using the subscribed property.
     useSubscribed = config.getUseSubscribed();
 
@@ -222,7 +233,11 @@ public class StoreInfo implements ValueChangeListener, Item, NetworkConnectionLi
     }
 
     if (storeThread == null) {
-      storeThread = new ActionThread(this.getStoreID() + " - ActionThread");
+      if (idleManager != null) {
+        storeThread = new StoreIdleActionThread(this.getStoreID() + " - ActionThread");
+      } else {
+        storeThread = new ActionThread(this.getStoreID() + " - ActionThread");
+      }
       storeThread.start();
     }
 
@@ -284,6 +299,23 @@ public class StoreInfo implements ValueChangeListener, Item, NetworkConnectionLi
   }
 
   /**
+   * Updates any idle folders.
+   */
+  public void updateIdleFolders() {
+    if (getIdleManager() != null) {
+      for (FolderInfo fi: getAllFolders()) {
+        if (fi.getStatus() == FolderInfo.CONNECTED) {
+          try {
+            getIdleManager().watch(fi.getFolder());
+          } catch (MessagingException me) {
+            me.printStackTrace();
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * Load all IMAP properties.
    */
   void loadImapProperties(Properties p, StoreConfiguration config) {
@@ -306,6 +338,11 @@ public class StoreInfo implements ValueChangeListener, Item, NetworkConnectionLi
     // use a dedicated store connection.
     p.setProperty("mail.imap.separatestoreconnection", "true");
     p.setProperty("mail.imaps.separatestoreconnection", "true");
+
+    // allow for socketchannels
+    p.setProperty("mail.imap.usesocketchannels", "true");
+    p.setProperty("mail.imaps.usesocketchannels", "true");
+
   }
 
   /**
@@ -991,11 +1028,13 @@ public class StoreInfo implements ValueChangeListener, Item, NetworkConnectionLi
    * Gets all of the children folders of this StoreInfo which are both
    * Open and can contain Messages.
    */
-  public Vector getAllFolders() {
-    Vector returnValue = new Vector();
+  public Vector<FolderInfo> getAllFolders() {
+    Vector<FolderInfo> returnValue = new Vector();
     Vector subFolders = getChildren();
-    for (int i = 0; i < subFolders.size(); i++) {
-      returnValue.addAll(((FolderInfo) subFolders.elementAt(i)).getAllFolders());
+    if (subFolders != null) {
+      for (int i = 0; i < subFolders.size(); i++) {
+        returnValue.addAll(((FolderInfo) subFolders.elementAt(i)).getAllFolders());
+      }
     }
     return returnValue;
   }
@@ -1051,7 +1090,7 @@ public class StoreInfo implements ValueChangeListener, Item, NetworkConnectionLi
     while(currentIter.hasNext()) {
       String folder = currentIter.next();
       if (! subscribedNames.contains(folder)) {
-        currentSubscribed.remove(folder);
+        currentIter.remove();
       } else {
         subscribedNames.remove(folder);
       }
@@ -1118,7 +1157,6 @@ public class StoreInfo implements ValueChangeListener, Item, NetworkConnectionLi
       getLogger().log(Level.INFO, "Action Queue Size:  " + queueSize);
       statusBuffer.append("Action Queue Size:  " + queueSize +"\r\n");
       if (storeThread.getQueueSize() > 0) {
-        System.out.println("Queue:");
         java.util.List queue = storeThread.getQueue();
         for (int i = 0; i < queue.size(); i++) {
           net.suberic.util.thread.ActionThread.ActionEventPair current = (net.suberic.util.thread.ActionThread.ActionEventPair) queue.get(i);
@@ -1130,7 +1168,6 @@ public class StoreInfo implements ValueChangeListener, Item, NetworkConnectionLi
             entryDescription = "Unknown action";
 
           queueString = queueString + entryDescription;
-          System.out.println(queueString);
           statusBuffer.append(queueString + "\r\n");
         }
       }
@@ -1284,6 +1321,13 @@ public class StoreInfo implements ValueChangeListener, Item, NetworkConnectionLi
   }
 
   /**
+   * Returns the IdleManager if exists.
+   */
+  public IdleManager getIdleManager() {
+    return idleManager;
+  }
+
+  /**
    * Returns the logger for this Store.
    */
   public Logger getLogger() {
@@ -1297,10 +1341,23 @@ public class StoreInfo implements ValueChangeListener, Item, NetworkConnectionLi
    * Updates the debug status on the session.
    */
   void updateSessionDebug() {
-    if (mStoreConfiguration.getSessionDebug()|| (! mStoreConfiguration.getSessionDebugLogLevel().equalsIgnoreCase("OFF"))) {
+    if (mStoreConfiguration.getSessionDebug() || (! mStoreConfiguration.getSessionDebugLogLevel().equalsIgnoreCase("OFF"))) {
       mSession.setDebug(true);
     } else {
       mSession.setDebug(false);
+    }
+  }
+
+  /**
+   * Updates the sleep status for all open folders before sleeping.
+   */
+  public class StoreIdleActionThread extends ActionThread {
+    public StoreIdleActionThread(String name) {
+      super(name);
+    }
+
+    protected void preSleep() {
+      updateIdleFolders();
     }
   }
 }

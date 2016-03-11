@@ -194,7 +194,7 @@ public class DndUtils {
       SecurityManager sm = System.getSecurityManager();
       if (sm != null) {
         try {
-          sm.checkSystemClipboardAccess();
+          sm.checkPermission(new AWTPermission("accessClipboard"));
           return true;
         } catch (SecurityException se) {
           canAccessSystemClipboard = false;

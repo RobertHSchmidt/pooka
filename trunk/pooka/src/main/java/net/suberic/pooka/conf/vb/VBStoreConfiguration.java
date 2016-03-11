@@ -279,11 +279,11 @@ public class VBStoreConfiguration extends VBConfiguration implements StoreConfig
 
   @Override
   public String getSessionDebugLogLevel() {
-    return getString(getStoreProperty() + ".sessionDebugLogLevel", "OFF");
+    return getString(getStoreProperty() + ".sessionDebug.logLevel", "OFF");
   }
   @Override
   public void setSessionDebugLogLevel(String sessionDebugLogLevel) {
-    setString(getStoreProperty() + ".sessionDebugLogLevel", sessionDebugLogLevel);
+    setString(getStoreProperty() + ".sessionDebug.logLevel", sessionDebugLogLevel);
   }
 
 }

@@ -150,11 +150,11 @@ public class MessageNotificationManager implements ValueChangeListener {
       } catch (Error e) {
         available = false;
         System.err.println("Error starting up tray icon:  " + e.getMessage());
-        e.printStackTrace();
+        //e.printStackTrace();
       } catch (Exception exc) {
         available = false;
         System.err.println("Error starting up tray icon:  " + exc.getMessage());
-        exc.printStackTrace();
+        //exc.printStackTrace();
       }
       setShowNewMailMessage(Pooka.getProperty("Pooka.trayIcon.showNewMailMessage", "true").equalsIgnoreCase("true"));
       setAlwaysDisplay(Pooka.getProperty("Pooka.trayIcon.alwaysDisplay", "true").equalsIgnoreCase("true"));

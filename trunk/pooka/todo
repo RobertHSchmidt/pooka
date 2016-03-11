@@ -1,3 +1,9 @@
+*) add in carddev support
+
+*) continue on separation project
+
+*) move up to jdk8, just for fun
+
 *) make cut and paste of messages give some sort of visual notification. 
    right now, if you select 20 messages, ^C, then go to another folder and
    ^V, it appears that nothing happens until suddenly the messages appear.
