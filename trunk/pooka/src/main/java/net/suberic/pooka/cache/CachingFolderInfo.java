@@ -5,6 +5,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.event.MessageChangedEvent;
 import javax.mail.event.ConnectionEvent;
 import java.util.Vector;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.*;
 import java.util.StringTokenizer;
@@ -354,21 +355,25 @@ public class CachingFolderInfo extends net.suberic.pooka.UIDFolderInfo {
         getFolder().fetch(messages, uidFetchProfile);
         getLogger().log(Level.FINE, "done fetching messages.  getting uid's");
 
-        long[] uids = new long[messages.length];
+        List<Long> uidList = new ArrayList<Long>();
 
         for (int i = 0; i < messages.length; i++) {
-          uids[i] = getUID(messages[i]);
+          try {
+            uidList.add(getUID(messages[i]));
+          } catch (MessagingException me) {
+            // message has probably been removed; ignore.
+          }
         }
 
         MessageInfo mi;
 
-        for (int i = 0; i < uids.length; i++) {
-          Message m = new CachingMimeMessage(this, uids[i]);
+        for (Long uid: uidList) {
+          Message m = new CachingMimeMessage(this, uid);
           mi = new MessageInfo(m, this);
 
           messageProxies.add(new MessageProxy(getColumnValues() , mi));
           messageToInfoTable.put(m, mi);
-          uidToInfoTable.put(new Long(uids[i]), mi);
+          uidToInfoTable.put(uid, mi);
         }
 
         return messageProxies;

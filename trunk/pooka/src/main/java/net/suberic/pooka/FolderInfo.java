@@ -946,7 +946,9 @@ public class FolderInfo implements MessageCountListener, ValueChangeListener, Us
           int numProxies = proxies.size();
           List newProxies = new ArrayList();
           for (int i = 0; i < newCount; i++) {
-            newProxies.add(proxies.get((numProxies - newCount) + i));
+            if (numProxies >=  newCount - i) {
+              newProxies.add(proxies.get((numProxies - newCount) + i));
+            }
           }
           proxies.removeAll(applyFilters(newProxies));
         }
