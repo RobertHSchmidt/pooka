@@ -3,6 +3,7 @@ import javax.swing.*;
 import java.io.*;
 import javax.mail.*;
 import net.suberic.pooka.Pooka;
+import net.suberic.util.thread.ActionThread;
 
 // TODO make StoreFileWrapper for selecting from available stores
 // --jphekman
@@ -16,18 +17,18 @@ public class FolderFileWrapper extends File {
   private FolderFileWrapper parent;
   private FolderFileWrapper[] children = null;
   private String path;
-  private Object mRunLock = null;
+  private ActionThread actionThread;
 
   /**
    * Creates a new FolderFileWrapper from a Folder.  This should only
    * be used for direct children of the Folder.
    */
-  public FolderFileWrapper(Folder f, FolderFileWrapper p) {
+  public FolderFileWrapper(Folder f, FolderFileWrapper p, ActionThread t) {
     super(f.getName());
     folder = f;
     parent = p;
     path = f.getName();
-    mRunLock = p.getRunLock();
+    actionThread = t;
     if (p != null)
       getLogger().fine("creating FolderFileWrapper from parent '" + p.getAbsolutePath() + "' from folder '" + f.getName() + "'");
     else
@@ -39,12 +40,12 @@ public class FolderFileWrapper extends File {
    * and parent.  This is used for making relative paths to files, i.e.
    * a child of '/foo' called 'bar/baz'.
    */
-  public FolderFileWrapper(Folder f, FolderFileWrapper p, String filePath) {
+  public FolderFileWrapper(Folder f, FolderFileWrapper p, String filePath, ActionThread t) {
     super(f.getName());
     folder = f;
     parent = p;
-    mRunLock = p.getRunLock();
     path = filePath;
+    actionThread = t;
     if (p != null)
       getLogger().fine("creating FolderFileWrapper from parent '" + p.getAbsolutePath() + "' called '" + filePath + "'");
     else
@@ -56,11 +57,11 @@ public class FolderFileWrapper extends File {
    * and parent.  This is used for making relative paths to files, i.e.
    * a child of '/foo' called 'bar/baz'.
    */
-  public FolderFileWrapper(Folder f, String filePath, Object pRunLock) {
+  public FolderFileWrapper(Folder f, String filePath, ActionThread t) {
     super(f.getName());
     folder = f;
     parent = null;
-    mRunLock = pRunLock;
+    actionThread=t;
     path = filePath;
 
     getLogger().fine("creating FolderFileWrapper from parent 'null' called '" + filePath + "'");
@@ -150,7 +151,7 @@ public class FolderFileWrapper extends File {
     if (this.isAbsolute())
       return this;
     else
-      return new FolderFileWrapper(getFolder(), getRoot(), getAbsolutePath());
+      return new FolderFileWrapper(getFolder(), getRoot(), getAbsolutePath(), actionThread);
   }
 
   /**
@@ -456,64 +457,66 @@ public class FolderFileWrapper extends File {
   /**
    * This loads the children of the Folder.
    */
-  private synchronized void loadChildren() {
-    synchronized(getRunLock()) {
-      {
-        getLogger().fine(Thread.currentThread().getName() + ":  calling loadChildren() on " + getAbsolutePath());
-      }
+  private void loadChildren() {
+    getLogger().fine("loading children in thread " + Thread.currentThread());
+    if (children == null) {
+      getLogger().fine("children is not null");
+      actionThread.addToQueue(new javax.swing.AbstractAction() {
+          public void actionPerformed(java.awt.event.ActionEvent ae) {
+            getLogger().fine("in actionperformed loading children on " + Thread.currentThread());
+          getLogger().fine(Thread.currentThread().getName() + ":  calling loadChildren() on " + getAbsolutePath());
 
-      if (children == null) {
-        getLogger().fine(Thread.currentThread().getName() + ":  children is null on " + getAbsolutePath() + ".  loading children.");
-        if (isDirectory() ||  ! exists()) {
-          try {
+          if (isDirectory() ||  ! exists()) {
+            try {
+              getLogger().fine(Thread.currentThread().getName() + ":  checking for connection.");
 
-            getLogger().fine(Thread.currentThread().getName() + ":  checking for connection.");
+              if (!folder.getStore().isConnected()) {
+                getLogger().fine(Thread.currentThread().getName() + ":  parent store of " + getAbsolutePath() + " is not connected.  reconnecting.");
+                folder.getStore().connect();
+              } else {
 
-            if (!folder.getStore().isConnected()) {
-              getLogger().fine(Thread.currentThread().getName() + ":  parent store of " + getAbsolutePath() + " is not connected.  reconnecting.");
-              folder.getStore().connect();
-            } else {
-
-              getLogger().fine(Thread.currentThread().getName() + ":  connection is ok.");
-            }
-
-
-
-            getLogger().fine(Thread.currentThread().getName() + ":  calling folder.list()");
-            Folder[] childList = folder.list();
-
-            if (parent == null) {
-              // add for namespaces.
-              try {
-                Folder[] namespaces = folder.getStore().getSharedNamespaces();
-                if (namespaces != null && namespaces.length > 0) {
-                  Folder[] newChildList = new Folder[childList.length + namespaces.length];
-                  System.arraycopy(namespaces, 0, newChildList, 0, namespaces.length);
-                  System.arraycopy(childList, 0, newChildList, namespaces.length, childList.length);
-                  childList = newChildList;
-                }
-              } catch (Exception e) {
-                // FIXME do nothing for now.
+                getLogger().fine(Thread.currentThread().getName() + ":  connection is ok.");
               }
+
+              getLogger().fine(Thread.currentThread().getName() + ":  calling folder.list()");
+              Folder[] childList = folder.list();
+
+              if (parent == null) {
+                // add for namespaces.
+                try {
+                  Folder[] namespaces = folder.getStore().getSharedNamespaces();
+                  if (namespaces != null && namespaces.length > 0) {
+                    Folder[] newChildList = new Folder[childList.length + namespaces.length];
+                    System.arraycopy(namespaces, 0, newChildList, 0, namespaces.length);
+                    System.arraycopy(childList, 0, newChildList, namespaces.length, childList.length);
+                    childList = newChildList;
+                  }
+                } catch (Exception e) {
+                  // FIXME do nothing for now.
+                }
+              }
+
+              getLogger().fine(Thread.currentThread().getName() + ":  folder.list() returned " + childList + "; creating new folderFileWrapper.");
+
+              FolderFileWrapper[] tmpChildren = new FolderFileWrapper[childList.length];
+              for (int i = 0; i < childList.length; i++) {
+
+                getLogger().fine(Thread.currentThread().getName() + ":  calling new FolderFileWrapper for " + childList[i].getName() + " (entry # " + i);
+
+                tmpChildren[i] = new FolderFileWrapper(childList[i], FolderFileWrapper.this, actionThread);
+              }
+
+              children = tmpChildren;
+            } catch (MessagingException me) {
+              getLogger().fine("caught exception during FolderFileWrapper.loadChildren() on " + getAbsolutePath() + ".");
+              me.printStackTrace();
             }
-
-            getLogger().fine(Thread.currentThread().getName() + ":  folder.list() returned " + childList + "; creating new folderFileWrapper.");
-
-            FolderFileWrapper[] tmpChildren = new FolderFileWrapper[childList.length];
-            for (int i = 0; i < childList.length; i++) {
-
-              getLogger().fine(Thread.currentThread().getName() + ":  calling new FolderFileWrapper for " + childList[i].getName() + " (entry # " + i);
-
-              tmpChildren[i] = new FolderFileWrapper(childList[i], this);
-            }
-
-            children = tmpChildren;
-          } catch (MessagingException me) {
-            getLogger().fine("caught exception during FolderFileWrapper.loadChildren() on " + getAbsolutePath() + ".");
-            me.printStackTrace();
           }
-        }
-      }
+          }
+        }, new java.awt.event.ActionEvent(this, 0, "folder-list"), ActionThread.PRIORITY_HIGH, true);
+      getLogger().fine("addToQueue complete; children = " + children);
+    } else {
+      getLogger().fine("children is not null; returning.");
     }
   }
 
@@ -521,71 +524,73 @@ public class FolderFileWrapper extends File {
    * This refreshes the children of the Folder.
    */
   public synchronized void refreshChildren() {
-    synchronized(getRunLock()) {
-      getLogger().fine(Thread.currentThread().getName() + ":  calling refreshChildren() on " + getAbsolutePath());
-      //Thread.dumpStack();
+    getLogger().fine("refresh children");
+    actionThread.addToQueue(new javax.swing.AbstractAction() {
+        public void actionPerformed(java.awt.event.ActionEvent ae) {
+          getLogger().fine("in acitonperformed refresh children");
 
-      if (children == null) {
-        getLogger().fine(Thread.currentThread().getName() + ":  children is null on " + getAbsolutePath() + ".  calling loadChildren().");
-        loadChildren();
-      } else {
-        if (isDirectory() ||  ! exists()) {
-          try {
+          getLogger().fine(Thread.currentThread().getName() + ":  calling refreshChildren() on " + getAbsolutePath());
+          //Thread.dumpStack();
 
-            getLogger().fine(Thread.currentThread().getName() + ":  checking for connection.");
+          if (children == null) {
+            getLogger().fine(Thread.currentThread().getName() + ":  children is null on " + getAbsolutePath() + ".  calling loadChildren().");
+            loadChildren();
+          } else {
+            if (isDirectory() ||  ! exists()) {
+              try {
 
-            if (!folder.getStore().isConnected()) {
-              getLogger().fine(Thread.currentThread().getName() + ":  parent store of " + getAbsolutePath() + " is not connected.  reconnecting.");
-              folder.getStore().connect();
-            } else {
+                getLogger().fine(Thread.currentThread().getName() + ":  checking for connection.");
 
-              getLogger().fine(Thread.currentThread().getName() + ":  connection is ok.");
+                if (!folder.getStore().isConnected()) {
+                  getLogger().fine(Thread.currentThread().getName() + ":  parent store of " + getAbsolutePath() + " is not connected.  reconnecting.");
+                  folder.getStore().connect();
+                } else {
+
+                  getLogger().fine(Thread.currentThread().getName() + ":  connection is ok.");
             }
 
 
 
-            getLogger().fine(Thread.currentThread().getName() + ":  calling folder.list()");
-            Folder[] childList = folder.list();
+                getLogger().fine(Thread.currentThread().getName() + ":  calling folder.list()");
+                Folder[] childList = folder.list();
 
-            getLogger().fine(Thread.currentThread().getName() + ":  folder.list() returned " + childList + "; creating new folderFileWrapper.");
+                getLogger().fine(Thread.currentThread().getName() + ":  folder.list() returned " + childList + "; creating new folderFileWrapper.");
 
-            FolderFileWrapper[] tmpChildren = new FolderFileWrapper[childList.length];
-            for (int i = 0; i < childList.length; i++) {
+                FolderFileWrapper[] tmpChildren = new FolderFileWrapper[childList.length];
+                for (int i = 0; i < childList.length; i++) {
 
-              getLogger().fine(Thread.currentThread().getName() + ":  calling new FolderFileWrapper for " + childList[i].getName() + " (entry # " + i);
+                  getLogger().fine(Thread.currentThread().getName() + ":  calling new FolderFileWrapper for " + childList[i].getName() + " (entry # " + i);
 
-              // yeah, this is n! or something like that. shouldn't matter--
-              // if we have somebody running with that many folders, or with
-              // that slow of a machine, we're in trouble anyway.
+                  // yeah, this is n! or something like that. shouldn't matter--
+                  // if we have somebody running with that many folders, or with
+                  // that slow of a machine, we're in trouble anyway.
 
-              //try to get a match.
-              boolean found = false;
-              for (int j = 0; ! found && j < children.length; j++) {
-                if (children[j].getName().equals(childList[i].getName())) {
-                  tmpChildren[i] = children[j];
-                  found = true;
+                  //try to get a match.
+                  boolean found = false;
+                  for (int j = 0; ! found && j < children.length; j++) {
+                    if (children[j].getName().equals(childList[i].getName())) {
+                      tmpChildren[i] = children[j];
+                      found = true;
+                    }
+                  }
+
+                  if (! found) {
+                    tmpChildren[i] = new FolderFileWrapper(childList[i], FolderFileWrapper.this, actionThread);
+                  }
                 }
-              }
 
-              if (! found) {
-                tmpChildren[i] = new FolderFileWrapper(childList[i], this);
+                children = tmpChildren;
+              } catch (MessagingException me) {
+                Pooka.getUIFactory().showError(Pooka.getProperty("error.refreshingFolder", "error refreshing folder's children: "), me);
               }
             }
-
-            children = tmpChildren;
-          } catch (MessagingException me) {
-            Pooka.getUIFactory().showError(Pooka.getProperty("error.refreshingFolder", "error refreshing folder's children: "), me);
           }
         }
-      }
-    }
-
+      }, new java.awt.event.ActionEvent(this, 0, "folder-list"), ActionThread.PRIORITY_HIGH, true);
   }
 
   /* Only accepts relative filenames. */
   public FolderFileWrapper getFileByName(String filename) {
-
-
     getLogger().fine("calling getFileByName(" + filename + ") on folder " + getName() + " (" + getPath() + ") (abs " + getAbsolutePath() + ")");
 
     String origFilename = new String(filename);
@@ -651,7 +656,7 @@ public class FolderFileWrapper extends File {
         newChildren[i] = children[i];
 
       try {
-        newChildren[children.length] = new FolderFileWrapper(folder.getFolder(filename), this);
+        newChildren[children.length] = new FolderFileWrapper(folder.getFolder(filename), this, actionThread);
       } catch (MessagingException me) {
       }
 
@@ -674,13 +679,6 @@ public class FolderFileWrapper extends File {
     }
 
     return relative;
-  }
-
-  /**
-   * Returns the object that we use for a run lock.
-   */
-  public Object getRunLock() {
-    return mRunLock;
   }
 
   /**

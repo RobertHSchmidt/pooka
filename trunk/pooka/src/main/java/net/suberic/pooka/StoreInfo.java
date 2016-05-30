@@ -308,7 +308,7 @@ public class StoreInfo implements ValueChangeListener, Item, NetworkConnectionLi
           try {
             getIdleManager().watch(fi.getFolder());
           } catch (MessagingException me) {
-            me.printStackTrace();
+            System.out.println("exception watching " + fi.getFolderName());
           }
         }
       }

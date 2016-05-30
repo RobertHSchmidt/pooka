@@ -1,5 +1,8 @@
-apply plugin: 'java'
-apply plugin: 'application'
+plugins {
+  id 'java' // or 'groovy' Must be explicitly applied
+	id 'application'
+  id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
 
 mainClassName = 'net.suberic.pooka.Pooka'
 repositories {
@@ -7,11 +10,17 @@ repositories {
 }
 version = '2.0'
 dependencies {
-  compile group: 'javax.mail', name: 'mail', version: '1.5.5'
+  compile group: 'com.sun.mail', name: 'javax.mail', version: '1.5.5'
+  compile group: 'com.sun.mail', name: 'mailapi', version: '1.5.5'
+  compile group: 'com.sun.mail', name: 'imap', version: '1.5.5'
+  compile group: 'com.sun.mail', name: 'pop3', version: '1.5.5'
+  compile group: 'com.sun.mail', name: 'gimap', version: '1.5.5'
+  compile group: 'com.sun.mail', name: 'smtp', version: '1.5.5'
   compile group: 'javax.help', name: 'javahelp', version: '2.0.05'
   compile group: 'org.htmlparser', name: 'htmlparser', version: '2.1'
   compile group: 'net.sourceforge.cardme', name: 'cardme', version: '0.4.0'
   compile group: 'com.github.lookfirst', name: 'sardine', version: '5.0.3'
-  compile files('Imported/javamail-crypto.jar', 'Imported/javamail-crypto-bouncycastle-openpgp.jar', 'Imported/javamail-crypto-bouncycastle-smime.jar')
+  compile files('Imported/javamail-crypto.jar', 'Imported/javamail-crypto-bouncycastle-openpgp.jar', 'Imported/javamail-crypto-bouncycastle-smime.jar', 'Imported/localproviders.jar')
   compile files('Imported/linspire_clear.jar')
 }
+

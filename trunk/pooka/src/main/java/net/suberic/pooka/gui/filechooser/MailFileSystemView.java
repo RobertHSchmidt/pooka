@@ -283,7 +283,7 @@ public class MailFileSystemView
       for (int i = 0; i < storeList.length; i++) {
         synchronized(storeList[i].getStoreThread().getRunLock()) {
           Folder f = storeList[i].getStore().getDefaultFolder();
-          roots[i] = new FolderFileWrapper(f, storeList[i].getStoreID(), storeList[i].getStoreThread().getRunLock());
+          roots[i] = new FolderFileWrapper(f, storeList[i].getStoreID(), storeList[i].getStoreThread());
         }
       }
       return roots;

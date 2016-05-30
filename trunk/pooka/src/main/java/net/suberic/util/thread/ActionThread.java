@@ -42,7 +42,8 @@ public class ActionThread extends Thread {
     public Action action;
     public ActionEvent event;
     public int priority = PRIORITY_NORMAL;
-
+    public boolean completed = false;
+    public Object lock = new Object();
     /**
      * Creates an NORMAL priority ActionEventPair.
      */
@@ -57,6 +58,13 @@ public class ActionThread extends Thread {
       action=newAction;
       event=newEvent;
       priority = newPriority;
+    }
+
+    public void complete() {
+      completed = true;
+      synchronized(lock) {
+        lock.notifyAll();
+      }
     }
   }
 
@@ -85,14 +93,23 @@ public class ActionThread extends Thread {
           e.printStackTrace();
         } finally {
           mCurrentActionName = "";
+          pair.complete();
         }
         pair = popQueue();
       }
       preSleep();
       try {
-        sleeping = true;
-        while (true)
-          Thread.sleep(100000000);
+        boolean shouldSleep = true;
+        synchronized(this) {
+          shouldSleep = actionQueue.isEmpty();
+          if (shouldSleep) {
+            sleeping = true;
+          }
+        }
+        if (shouldSleep) {
+          while (true)
+            Thread.sleep(100000000);
+        }
       } catch (InterruptedException ie) {
         sleeping = false;
       }
@@ -123,7 +140,7 @@ public class ActionThread extends Thread {
    * This adds an item to the queue.  It also starts up the Thread if it's
    * not already running.
    */
-  public synchronized void addToQueue(Action action, ActionEvent event) {
+  public void addToQueue(Action action, ActionEvent event) {
     addToQueue(action, event, PRIORITY_NORMAL);
   }
 
@@ -131,21 +148,47 @@ public class ActionThread extends Thread {
    * This adds an item to the queue.  It also starts up the Thread if it's
    * not already running.
    */
-  public synchronized void addToQueue(Action action, ActionEvent event, int priority) {
-    if (! stopMe) {
-      // see where this should go.
-      int index = 0;
-      boolean found = false;
-      while (! found && index < actionQueue.size()) {
-        ActionEventPair current = (ActionEventPair) actionQueue.elementAt(index);
-        if (current.priority < priority)
-          found = true;
-        else
-          index++;
+  public void addToQueue(Action action, ActionEvent event, int priority) {
+    addToQueue(action, event, priority, false);
+  }
+
+  /**
+   * This adds an item to the queue.  It also starts up the Thread if it's
+   * not already running.
+   */
+  public void addToQueue(Action action, ActionEvent event, int priority, boolean runSynchronously) {
+    ActionEventPair pair = null;
+    // if we're running synchronously and already on this action thread,
+    // then just run it.
+    if (runSynchronously && Thread.currentThread() == this) {
+      action.actionPerformed(event);
+    } else {
+      synchronized(this) {
+        if (! stopMe) {
+          // see where this should go.
+          int index = 0;
+          boolean found = false;
+          while (! found && index < actionQueue.size()) {
+            ActionEventPair current = (ActionEventPair) actionQueue.elementAt(index);
+            if (current.priority < priority)
+              found = true;
+            else
+              index++;
+          }
+          pair = new ActionEventPair(action, event, priority);
+          actionQueue.add(index, pair);
+          if (sleeping)
+            this.interrupt();
+        }
       }
-      actionQueue.add(index, new ActionEventPair(action, event, priority));
-      if (sleeping)
-        this.interrupt();
+      if (runSynchronously) {
+        try {
+          synchronized(pair.lock) {
+            pair.lock.wait();
+          }
+        } catch (Exception e) {
+        }
+      }
     }
   }
 
