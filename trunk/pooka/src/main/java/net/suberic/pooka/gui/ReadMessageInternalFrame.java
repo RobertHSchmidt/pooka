@@ -95,7 +95,11 @@ public class ReadMessageInternalFrame extends MessageInternalFrame {
       this.setTitle(Pooka.getProperty("Pooka.messageInternalFrame.messageTitle.noSubject", "<no subject>"));
     }
 
-    messageDisplay = new ReadMessageDisplayPanel(this);
+    if (Pooka.getProperty("useJfx", "false").equalsIgnoreCase("true")) {
+      messageDisplay = new ReadMessageJFXDisplayPanel(this);
+    } else {
+      messageDisplay = new ReadMessageDisplayPanel(this);
+    }
     messageDisplay.configureMessageDisplay();
 
     toolbar = new ConfigurableToolbar("MessageWindowToolbar", Pooka.getResources());

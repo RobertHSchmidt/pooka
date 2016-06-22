@@ -28,6 +28,7 @@ public class Pooka {
    * --help shows these options.
    */
   static public void main(String argv[]) {
+    LocalNetworkProxy.enable();
     sManager = new PookaManager();
     sStartupManager = new StartupManager(sManager);
     sStartupManager.runPooka(argv);

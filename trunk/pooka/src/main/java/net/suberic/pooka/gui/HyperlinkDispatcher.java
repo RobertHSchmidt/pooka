@@ -5,6 +5,7 @@ import java.util.StringTokenizer;
 import net.suberic.util.swing.HyperlinkMouseHandler;
 import javax.swing.JTextPane;
 import javax.swing.text.*;
+import java.net.URL;
 
 /**
  * This is a simple class which implements HyperlinkListener.
@@ -62,43 +63,38 @@ public class HyperlinkDispatcher implements HyperlinkListener {
         }
       }
     } else if (e.getEventType() ==  HyperlinkEvent.EventType.ACTIVATED) {
-      if (Pooka.getProperty("Pooka.url.useDefaultHandler", "true").equalsIgnoreCase("true")) {
-        try {
-          java.awt.Desktop.getDesktop().browse(e.getURL().toURI());
-        } catch(Exception ex) {
-          if (errorHandler != null) {
-            errorHandler.showError(java.text.MessageFormat.format(Pooka.getProperty("error.urlHandler.openingUrl", "Error opening url {0}:  "), e.getURL()), ex);
-          } else {
-            System.err.println(Pooka.getProperty("error.urlHandler.openingUrl", "Error opening url {0}:  " + e.getURL()));
-            ex.printStackTrace();
-          }
-        }
-      } else {
-        String parsedVerb = Pooka.getProperty("Pooka.urlHandler", "firefox %s");
-        if (parsedVerb.indexOf("%s") == -1)
-          parsedVerb = parsedVerb + " %s";
-
-        String[] cmdArray;
-
-        parsedVerb = ExternalLauncher.substituteString(parsedVerb, "%s", e.getURL().toString());
-
-        StringTokenizer tok = new StringTokenizer(parsedVerb);
-        cmdArray = new String[tok.countTokens()];
-        for (int i = 0; tok.hasMoreTokens(); i++) {
-          String currentString = tok.nextToken();
-          cmdArray[i]=currentString;
-        }
-        try {
-          Runtime.getRuntime().exec(cmdArray);
-        } catch (java.io.IOException ioe) {
-          if (errorHandler != null) {
-            errorHandler.showError(java.text.MessageFormat.format(Pooka.getProperty("error.urlHandler.openingUrl", "Error opening url {0}:  "), e.getURL()), ioe);
-          } else {
-            System.err.println(Pooka.getProperty("error.urlHandler.openingUrl", "Error opening url {0}:  " + e.getURL()));
-            ioe.printStackTrace();
-          }
+      try {
+        openLink(e.getURL());
+      } catch (Exception ex) {
+        if (errorHandler != null) {
+          errorHandler.showError(java.text.MessageFormat.format(Pooka.getProperty("error.urlHandler.openingUrl", "Error opening url {0}:  "), e.getURL()), ex);
+        } else {
+          System.err.println(Pooka.getProperty("error.urlHandler.openingUrl", "Error opening url {0}:  " + e.getURL()));
+          ex.printStackTrace();
         }
       }
+    }
+  }
+
+  public static void openLink(URL url) throws Exception {
+    if (Pooka.getProperty("Pooka.url.useDefaultHandler", "true").equalsIgnoreCase("true")) {
+        java.awt.Desktop.getDesktop().browse(url.toURI());
+    } else {
+      String parsedVerb = Pooka.getProperty("Pooka.urlHandler", "firefox %s");
+      if (parsedVerb.indexOf("%s") == -1)
+        parsedVerb = parsedVerb + " %s";
+
+      String[] cmdArray;
+
+      parsedVerb = ExternalLauncher.substituteString(parsedVerb, "%s", url.toString());
+
+      StringTokenizer tok = new StringTokenizer(parsedVerb);
+      cmdArray = new String[tok.countTokens()];
+      for (int i = 0; tok.hasMoreTokens(); i++) {
+        String currentString = tok.nextToken();
+        cmdArray[i]=currentString;
+      }
+      Runtime.getRuntime().exec(cmdArray);
     }
   }
 }

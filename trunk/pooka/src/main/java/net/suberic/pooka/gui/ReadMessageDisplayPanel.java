@@ -1,6 +1,7 @@
 package net.suberic.pooka.gui;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -32,18 +33,22 @@ import net.suberic.util.gui.ConfigurablePopupMenu;
 import net.suberic.util.swing.HyperlinkMouseHandler;
 
 public class ReadMessageDisplayPanel extends MessageDisplayPanel {
-  private JTextPane headerPane = null;
-  private JScrollPane headerScrollPane = null;
+  protected JTextPane headerPane = null;
+  protected JScrollPane headerScrollPane = null;
+  protected JPanel contentPane = null;
+  protected CardLayout contentPaneLayout = null;
 
-  private AttachmentPane attachmentPanel = null;
-  private net.suberic.pooka.gui.crypto.CryptoStatusDisplay cryptoStatusDisplay = null;
+  protected AttachmentPane attachmentPanel = null;
+  protected net.suberic.pooka.gui.crypto.CryptoStatusDisplay cryptoStatusDisplay = null;
 
-  private SpringLayout layout;
+  protected SpringLayout layout;
 
   public boolean firstShow = true;
 
-  private DisplayStyleComboBox displayCombo = null;
-  private DisplayStyleComboBox headerCombo = null;
+  public static String TEXT_LAYOUT = "text";
+
+  protected DisplayStyleComboBox displayCombo = null;
+  protected DisplayStyleComboBox headerCombo = null;
 
   Action[] defaultActions = new Action[] {
     new AttachmentPanelAction(),
@@ -51,7 +56,7 @@ public class ReadMessageDisplayPanel extends MessageDisplayPanel {
     new FindNextAction()
   };
 
-  private static int BORDER = 2;
+  protected static int BORDER = 2;
 
   /**
    * Creates an empty MessageDisplayPanel.
@@ -110,13 +115,18 @@ public class ReadMessageDisplayPanel extends MessageDisplayPanel {
 
     setDefaultFont(editorPane);
 
-    this.add(editorScrollPane);
-    layout.putConstraint(SpringLayout.NORTH, editorScrollPane, BORDER, SpringLayout.SOUTH, headerScrollPane);
-    layout.putConstraint(SpringLayout.SOUTH, this, BORDER, SpringLayout.SOUTH, editorScrollPane);
-    layout.putConstraint(SpringLayout.WEST, editorScrollPane, BORDER, SpringLayout.WEST, this);
-    layout.putConstraint(SpringLayout.EAST, this, BORDER, SpringLayout.EAST, editorScrollPane);
+    contentPane = new JPanel();
+    contentPaneLayout = new CardLayout();
+    contentPane.setLayout(contentPaneLayout);
+    contentPane.add(editorScrollPane, TEXT_LAYOUT);
 
-    layout.getConstraints(headerScrollPane).setWidth(layout.getConstraints(editorScrollPane).getWidth());
+    this.add(contentPane);
+    layout.putConstraint(SpringLayout.NORTH, contentPane, BORDER, SpringLayout.SOUTH, headerScrollPane);
+    layout.putConstraint(SpringLayout.SOUTH, this, BORDER, SpringLayout.SOUTH, contentPane);
+    layout.putConstraint(SpringLayout.WEST, contentPane, BORDER, SpringLayout.WEST, this);
+    layout.putConstraint(SpringLayout.EAST, this, BORDER, SpringLayout.EAST, contentPane);
+
+    layout.getConstraints(headerScrollPane).setWidth(layout.getConstraints(contentPane).getWidth());
 
     keyBindings = new ConfigurableKeyBinding(this, "ReadMessageWindow.keyBindings", Pooka.getResources());
     keyBindings.setActive(getActions());
@@ -606,7 +616,7 @@ public class ReadMessageDisplayPanel extends MessageDisplayPanel {
     return sb.toString();
   }
 
-  private void clearVariableComponents() {
+  protected void clearVariableComponents() {
     if (attachmentPanel != null) {
       this.remove(attachmentPanel);
       layout.removeLayoutComponent(attachmentPanel);
