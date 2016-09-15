@@ -188,6 +188,7 @@ public class MessageProxy implements java.awt.datatransfer.ClipboardOwner {
   public static int TEXT_PREFERRED = 5;
   public static int HTML_PREFERRED = 10;
   public static int HTML_ONLY = 15;
+  public static int HTML_WITH_IMAGES = 20;
 
   // the header modes
   public static int HEADERS_DEFAULT = 0;
@@ -1622,6 +1623,7 @@ public class MessageProxy implements java.awt.datatransfer.ClipboardOwner {
         new ActionWrapper(new OpenRawDisplayAction(), folderThread),
         new ActionWrapper(new OpenTextDisplayAction(), folderThread),
         new ActionWrapper(new OpenHtmlDisplayAction(), folderThread),
+        new ActionWrapper(new OpenHtmlImagesDisplayAction(), folderThread),
         new ActionWrapper(new DefaultOpenAction(), folderThread),
         new ActionWrapper(new MoveAction(), folderThread),
         new ActionWrapper(new CopyAction(), folderThread),
@@ -1749,6 +1751,13 @@ public class MessageProxy implements java.awt.datatransfer.ClipboardOwner {
     OpenHtmlDisplayAction() {
       super("file-open-htmldisplay");
       displayModeValue = HTML_ONLY;
+    }
+  }
+
+  public class OpenHtmlImagesDisplayAction extends OpenAction {
+    OpenHtmlImagesDisplayAction() {
+      super("file-open-htmlimagesdisplay");
+      displayModeValue = HTML_WITH_IMAGES;
     }
   }
 

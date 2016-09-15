@@ -23,6 +23,7 @@ import org.w3c.dom.events.*;
 public class ReadMessageJFXDisplayPanel extends ReadMessageDisplayPanel {
   public static String HTML_LAYOUT = "html";
   JFXPanel fxPanel = null;
+  boolean htmlImagesLoaded = false;
 
   public ReadMessageJFXDisplayPanel(MessageUI ui) {
     super(ui);
@@ -53,11 +54,15 @@ public class ReadMessageJFXDisplayPanel extends ReadMessageDisplayPanel {
       String contentType = "text/plain";
 
       boolean displayHtml = false;
+      boolean showImages = false;
 
       int msgDisplayMode = getMessageProxy().getDisplayMode();
 
       // figure out html vs. text
       if (Pooka.getProperty("Pooka.displayHtml", "").equalsIgnoreCase("true")) {
+        if (msgDisplayMode >= MessageProxy.HTML_WITH_IMAGES) {
+          showImages = true;
+        }
         if (msgInfo.isHtml()) {
           if (msgDisplayMode > MessageProxy.TEXT_ONLY)
             displayHtml = true;
@@ -65,7 +70,6 @@ public class ReadMessageJFXDisplayPanel extends ReadMessageDisplayPanel {
         } else if (msgInfo.containsHtml()) {
           if (msgDisplayMode >= MessageProxy.HTML_PREFERRED)
             displayHtml = true;
-
         } else {
           // if we don't have any html, just display as text.
         }
@@ -130,6 +134,7 @@ public class ReadMessageJFXDisplayPanel extends ReadMessageDisplayPanel {
       final boolean contentIsNull = (content == null);
 
       final boolean fDisplayHtml = displayHtml;
+      final boolean fShowImages = showImages;
 
       SwingUtilities.invokeLater(new Runnable() {
           public void run() {
@@ -151,13 +156,16 @@ public class ReadMessageJFXDisplayPanel extends ReadMessageDisplayPanel {
               }
               //editorPane.setEditable(false);
               if (fDisplayHtml) {
-                if (fxPanel == null) {
+                if (fxPanel == null || (fShowImages && ! htmlImagesLoaded)) {
                   fxPanel = new JFXPanel();
                   contentPane.add(fxPanel, HTML_LAYOUT);
                   Platform.setImplicitExit(false);
                   Platform.runLater(new Runnable() {
                       @Override
                       public void run() {
+                        if (fShowImages) {
+                          net.suberic.pooka.LocalNetworkProxy.setAllowHttp(true);
+                        }
                         WebView browser = new WebView();
                         WebEngine webEngine = browser.getEngine();
                         webEngine.setJavaScriptEnabled(false);
@@ -165,6 +173,10 @@ public class ReadMessageJFXDisplayPanel extends ReadMessageDisplayPanel {
                         webEngine.getLoadWorker().stateProperty().addListener(new javafx.beans.value.ChangeListener<Worker.State>() {
                             public void changed(ObservableValue ov, Worker.State oldState, Worker.State newState) {
                               if (newState == Worker.State.SUCCEEDED) {
+                                if (fShowImages) {
+                                  net.suberic.pooka.LocalNetworkProxy.setAllowHttp(false);
+                                  htmlImagesLoaded = true;
+                                }
 
                                 EventListener listener = new EventListener() {
                                     public void handleEvent(Event ev) {

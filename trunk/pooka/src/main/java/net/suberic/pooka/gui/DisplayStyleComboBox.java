@@ -6,12 +6,12 @@ import java.util.*;
  * style.
  */
 public class DisplayStyleComboBox extends net.suberic.util.gui.ConfigurableComboBox {
-  
+
   public boolean displayStyle = false;
   public boolean headerStyle = false;
 
   /**
-   * This configures the ComboBox using the given buttonID and 
+   * This configures the ComboBox using the given buttonID and
    * VariableBundle.
    *
    * As defined in interface net.suberic.util.gui.ConfigurableUI.
@@ -23,14 +23,14 @@ public class DisplayStyleComboBox extends net.suberic.util.gui.ConfigurableCombo
 
     for (int i = 0; i < getItemCount(); i++) {
       String cmd = (String) selectionMap.get(getItemAt(i));
-      if (cmd.equalsIgnoreCase("file-open-textdisplay") || cmd.equalsIgnoreCase("file-open-htmldisplay") || cmd.equalsIgnoreCase("file-open-rawdisplay")) {
-	displayStyle = true;
+      if (cmd.equalsIgnoreCase("file-open-textdisplay") || cmd.equalsIgnoreCase("file-open-htmldisplay") || cmd.equalsIgnoreCase("file-open-rawdisplay") || cmd.equalsIgnoreCase("file-open-htmlimagesdisplay")) {
+  displayStyle = true;
       } else if (cmd.equalsIgnoreCase("file-open-defaultdisplay") || cmd.equalsIgnoreCase("file-open-fulldisplay")) {
-	headerStyle=true;
+  headerStyle=true;
       }
     }
 
-  } 
+  }
 
   /**
    * Called when either style is updated.
@@ -42,18 +42,18 @@ public class DisplayStyleComboBox extends net.suberic.util.gui.ConfigurableCombo
     for (int i = 0; i < getItemCount(); i++) {
       String cmd = (String) selectionMap.get(getItemAt(i));
       if (cmd != null) {
-	javax.swing.Action currentAction = getAction(cmd);
-	while (currentAction instanceof net.suberic.util.thread.ActionWrapper) {
-	  currentAction = ((net.suberic.util.thread.ActionWrapper) currentAction).getWrappedAction();
-	}
-	if (currentAction != null && currentAction instanceof MessageProxy.OpenAction) {
-	  MessageProxy.OpenAction oa = (MessageProxy.OpenAction) currentAction;
-	  if (((displayStyle && (oa.getDisplayModeValue() == newDisplayStyle)) || !displayStyle) && ((headerStyle && (oa.getHeaderModeValue() == newHeaderStyle)) || !headerStyle)) {
-	    if (getSelectedIndex() != i) {
-	      setSelectedIndex(i);
-	    }
-	  }
-	}
+  javax.swing.Action currentAction = getAction(cmd);
+  while (currentAction instanceof net.suberic.util.thread.ActionWrapper) {
+    currentAction = ((net.suberic.util.thread.ActionWrapper) currentAction).getWrappedAction();
+  }
+  if (currentAction != null && currentAction instanceof MessageProxy.OpenAction) {
+    MessageProxy.OpenAction oa = (MessageProxy.OpenAction) currentAction;
+    if (((displayStyle && (oa.getDisplayModeValue() == newDisplayStyle)) || !displayStyle) && ((headerStyle && (oa.getHeaderModeValue() == newHeaderStyle)) || !headerStyle)) {
+      if (getSelectedIndex() != i) {
+        setSelectedIndex(i);
+      }
+    }
+  }
       }
     }
   }

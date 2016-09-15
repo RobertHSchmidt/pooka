@@ -7,7 +7,7 @@ public class LocalNetworkProxy extends ProxySelector {
   static boolean enabled = false;
   private static ProxySelector defaultProxySelector = null;
   static boolean allowHttp = false;
-  public static void enable() {
+  public static synchronized void enable() {
     if (! enabled) {
       defaultProxySelector = ProxySelector.getDefault();
       ProxySelector.setDefault(new LocalNetworkProxy());
