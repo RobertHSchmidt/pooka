@@ -308,7 +308,23 @@ public class StoreInfo implements ValueChangeListener, Item, NetworkConnectionLi
           try {
             getIdleManager().watch(fi.getFolder());
           } catch (MessagingException me) {
-            System.out.println("exception watching " + fi.getFolderName());
+            System.out.println("exception watching " + fi.getFolderName() + ": " + me);
+            if (fi.shouldBeConnected()) {
+              final FolderInfo ffi = fi;
+              javax.swing.AbstractAction openFolderAction =new javax.swing.AbstractAction() {
+                  public void actionPerformed(java.awt.event.ActionEvent e) {
+                    try {
+                      ffi.openFolder(javax.mail.Folder.READ_WRITE);
+                    } catch (Exception me2) {
+                      System.out.println("error reopening folder " + ffi.getFolderName() + ": " + me2);
+                    }
+                  }
+                };
+
+              openFolderAction.putValue(javax.swing.Action.NAME, "file-open");
+              openFolderAction.putValue(javax.swing.Action.SHORT_DESCRIPTION, "file-open on folder " + ffi.getFolderID());
+              getStoreThread().addToQueue(openFolderAction, new java.awt.event.ActionEvent(this, 0, "file-open"), ActionThread.PRIORITY_LOW);
+            }
           }
         }
       }
