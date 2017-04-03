@@ -303,6 +303,16 @@ public class StoreInfo implements ValueChangeListener, Item, NetworkConnectionLi
    */
   public void updateIdleFolders() {
     if (getIdleManager() != null) {
+      if (! getIdleManager().isRunning()) {
+        System.out.println("idle manager has stopped.  creating a new one.");
+        try {
+          ExecutorService es = Executors.newCachedThreadPool();
+          idleManager = new IdleManager(mSession, es);
+        } catch (java.io.IOException ioe) {
+          ioe.printStackTrace();
+        }
+      }
+
       for (FolderInfo fi: getAllFolders()) {
         if (fi.getStatus() == FolderInfo.CONNECTED) {
           try {
